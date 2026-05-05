@@ -1,0 +1,46 @@
+# =====================================================================
+# bsw-growth-agent · what NOT to push to GitHub
+# =====================================================================
+
+# ---- Private workshop materials (Sophia's IP, not for public) ----
+script/
+docs/superpowers/
+
+# ---- Local Claude Code config ----
+.claude/
+.cursor/
+.aider*
+
+# ---- Secrets · never commit ----
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+secrets/
+credentials/
+
+# ---- OS / editor noise ----
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# ---- Node / build artifacts (just in case) ----
+node_modules/
+dist/
+build/
+*.log
+npm-debug.log*
+
+# ---- Local n8n state (if anyone clones and runs n8n locally) ----
+.n8n/
+*.local.json
+
+# ---- Backup files ----
+*.bak
+*.orig

@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Architecting Agentic Workflows for the Lean 2026 Startup · BSW 2026</title>
+<meta name="author" content="Sophia Stein, AI Architect" />
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/github.css" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<style>
+/* =======================================================================
+   ARCHITECTING AGENTIC WORKFLOWS · BSW 2026
+   Light editorial · single accent · strict grid frame
+   1280 × 720 fixed · uniform layout every slide
+   ======================================================================= */
+
+:root {
+  --bg:         #FAFAF7;         /* warm off-white */
+  --bg-alt:     #FFFFFF;
+  --surface:    #F2F2EE;
+  --surface-2:  #EBEBE6;
+
+  --text:       #18181B;
+  --text-2:     #3F3F46;
+  --text-3:     #71717A;
+  --text-4:     #A1A1AA;
+
+  --border:     #D4D4D0;
+  --border-soft:#E5E5E0;
+
+  --accent:     #6D28D9;         /* deep purple, used sparingly */
+  --accent-soft:#F3EFFE;
+  --accent-edge:#C4B5FD;
+
+  --good:       #059669;         /* mint, only for "good" indicators */
+  --good-soft:  #DCFCE7;
+  --warn:       #B91C1C;         /* red, only for warnings */
+  --warn-soft:  #FEE2E2;
+
+  /* Type scale */
+  --t-display:  64px;
+  --t-h1:       52px;
+  --t-h2:       34px;
+  --t-h3:       20px;
+  --t-body:     18px;
+  --t-small:    15px;
+  --t-tiny:     13px;
+}
+
+html, body { background: var(--bg); }
+.reveal { font-family: 'Inter', sans-serif; color: var(--text); background: var(--bg); font-weight: 400; }
+.reveal .progress { color: var(--accent); height: 3px; }
+.reveal .controls { color: var(--text-3); }
+.reveal .slide-number { color: var(--text-4); background: transparent; right: 16px; bottom: 14px; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+
+/* ----- STRICT GRID FRAME · uniform on every slide ----- */
+.reveal .slides section {
+  width: 1280px;
+  height: 720px;
+  padding: 56px 72px 56px;
+  box-sizing: border-box;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: 32px 88px 1fr 36px;     /* eyebrow / headline / body / footer · ALL FIXED */
+  gap: 18px;
+  background: var(--bg);
+  text-align: left;
+  margin: 0;
+}
+
+/* ----- Type primitives ----- */
+.reveal .eyebrow {
+  font-size: var(--t-tiny);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.reveal .eyebrow .dot { width: 7px; height: 7px; background: var(--accent); border-radius: 50%; flex-shrink: 0; }
+.reveal .eyebrow .part { color: var(--text-3); font-weight: 700; }
+.reveal .eyebrow .sep { color: var(--text-4); margin: 0 4px; }
+
+.reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal p, .reveal ul, .reveal ol { margin: 0; }
+.reveal h1 { font-size: var(--t-display); font-weight: 800; line-height: 1.04; letter-spacing: -0.025em; color: var(--text); text-transform: none; text-shadow: none; }
+.reveal h2 { font-size: var(--t-h2); font-weight: 700; line-height: 1.18; letter-spacing: -0.02em; color: var(--text); text-transform: none; text-shadow: none; align-self: start; }
+.reveal h2 em { font-weight: 700; color: var(--accent); font-style: normal; }
+.reveal h3 { font-size: var(--t-h3); font-weight: 700; line-height: 1.3; letter-spacing: -0.01em; color: var(--text); text-transform: none; text-shadow: none; }
+.reveal h4 { font-size: var(--t-tiny); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3); }
+.reveal p { font-size: var(--t-body); line-height: 1.55; color: var(--text-2); }
+.reveal p.lead { font-size: 22px; color: var(--text); font-weight: 500; line-height: 1.45; }
+.reveal p.kicker { font-size: var(--t-small); color: var(--text-3); line-height: 1.5; }
+.reveal a { color: var(--accent); border-bottom: 1px dotted var(--accent); text-decoration: none; }
+.reveal em { font-style: italic; }
+.reveal strong { color: var(--text); }
+
+/* ----- Body content area · IS the visual frame · uniform on every slide ----- */
+.reveal .body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-self: stretch;
+  min-height: 0;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px 32px;
+  overflow: hidden;
+}
+.reveal .body > .cards-2,
+.reveal .body > .cards-3,
+.reveal .body > .k-grid,
+.reveal .body > .timeline,
+.reveal .body > .pat-grid,
+.reveal .body > .recap-grid,
+.reveal .body > .cta-grid,
+.reveal .body > .lesson-options,
+.reveal .body > table,
+.reveal .body > .diagram,
+.reveal .body > pre,
+.reveal .body > .cost-bars {
+  flex: 1 1 auto;
+}
+.reveal .body .cards-2 .card,
+.reveal .body .cards-3 .card,
+.reveal .body .k-grid .arm,
+.reveal .body .cta-grid .cta-box {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ----- Footer · simple, monochrome ----- */
+.reveal .footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: var(--t-tiny);
+  color: var(--text-3);
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  align-self: end;
+}
+.reveal .footer span:empty { display: none; }
+.reveal .footer .tag {
+  display: inline-block;
+  padding: 3px 0;
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+.reveal .footer .tag::before { content: '◆ '; color: var(--accent); }
+.reveal .footer .cite {
+  margin-left: auto;
+  font-style: italic;
+  color: var(--text-4);
+  font-size: 12px;
+}
+
+/* ----- Cover ----- */
+section.cover {
+  background:
+    radial-gradient(720px 540px at 78% 22%, var(--accent-soft), transparent 70%),
+    var(--bg) !important;
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+  grid-template-rows: none !important;
+}
+section.cover .eyebrow { font-size: 13px; }
+section.cover h1 {
+  font-size: 76px;
+  font-weight: 900;
+  line-height: 1.02;
+  margin-top: 18px;
+  color: var(--text);
+}
+section.cover h1 em { color: var(--accent); font-style: normal; font-weight: 800; }
+section.cover .author {
+  margin-top: 36px;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--text);
+}
+section.cover .author .role { font-weight: 400; color: var(--text-3); margin-left: 12px; }
+section.cover .meta { margin-top: 14px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text-3); }
+
+/* ----- Promise (cold open) ----- */
+section.promise {
+  background: var(--bg) !important;
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+  padding: 56px 100px !important;
+  grid-template-rows: none !important;
+}
+section.promise .promise-text {
+  font-size: 52px;
+  font-weight: 800;
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+section.promise .promise-sub {
+  margin-top: 36px;
+  padding-left: 16px;
+  border-left: 3px solid var(--accent);
+  color: var(--text-3);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.5;
+  max-width: 80%;
+}
+
+/* ----- Quote (real quotations only) ----- */
+section.quote {
+  background: var(--bg) !important;
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+  padding: 56px 100px !important;
+  grid-template-rows: none !important;
+}
+section.quote blockquote {
+  font-size: 44px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--text);
+  margin: 0;
+  border: none;
+  padding: 0;
+  width: 100%;
+  font-style: normal;
+}
+section.quote blockquote::before { content: '“'; color: var(--accent); margin-right: 0.05em; }
+section.quote blockquote::after  { content: '”'; color: var(--accent); margin-left: 0.05em; }
+section.quote .attrib {
+  margin-top: 28px;
+  padding-left: 16px;
+  border-left: 3px solid var(--accent);
+  color: var(--text-3);
+  font-size: 14px;
+  font-weight: 500;
+}
+section.quote .anchor {
+  margin-top: 28px;
+  padding: 18px 24px;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+section.quote .anchor h4 { color: var(--accent); margin-bottom: 6px; }
+section.quote .anchor p  { font-size: 15px; color: var(--text); }
+
+/* ----- Divider ----- */
+section.divider {
+  background: var(--bg) !important;
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+  padding: 56px 100px !important;
+  grid-template-rows: none !important;
+}
+section.divider .part {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  letter-spacing: 0.32em;
+  color: var(--accent);
+  margin-bottom: 28px;
+}
+section.divider .question {
+  font-size: 56px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--text);
+  margin-bottom: 24px;
+  letter-spacing: -0.02em;
+}
+section.divider .sub {
+  font-size: 18px;
+  color: var(--text-3);
+  max-width: 80%;
+  line-height: 1.5;
+}
+
+/* ----- Demo cut ----- */
+section.demo {
+  background: var(--text) !important;
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  grid-template-rows: none !important;
+}
+section.demo h1 { font-size: 96px; color: #fff; margin: 0; font-weight: 900; }
+section.demo .pulse {
+  display: inline-block; width: 24px; height: 24px;
+  background: #34D399; border-radius: 50%;
+  margin-right: 12px; vertical-align: middle;
+  box-shadow: 0 0 28px #34D399;
+  animation: pulse 1.4s infinite;
+}
+@keyframes pulse { 0%,100% { opacity:1; transform:scale(1);} 50% { opacity:0.55; transform:scale(0.85); } }
+section.demo .sub { color: rgba(255,255,255,0.92); font-size: 22px; margin-top: 24px; font-weight: 500; max-width: 78%; }
+section.demo .signal { position: absolute; bottom: 32px; font-size: 11px; color: rgba(255,255,255,0.7); letter-spacing: 0.2em; text-transform: uppercase; }
+
+/* ----- End ----- */
+section.end {
+  background: var(--bg) !important;
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  grid-template-rows: none !important;
+}
+section.end h1 {
+  font-weight: 800;
+  font-size: 60px;
+  color: var(--text);
+  margin-bottom: 16px;
+  letter-spacing: -0.02em;
+}
+section.end h1 em { color: var(--accent); font-style: normal; }
+section.end .signoff { margin-top: 36px; color: var(--text-3); font-size: 14px; line-height: 1.6; }
+section.end .signoff strong { color: var(--text); }
+
+/* ----- Tables · clean horizontal lines, no fills ----- */
+.reveal table {
+  font-size: 16px;
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+}
+.reveal th {
+  background: transparent;
+  color: var(--text-3);
+  padding: 12px 18px 14px;
+  text-align: left;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-bottom: 1.5px solid var(--text);
+}
+.reveal td {
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border-soft);
+  color: var(--text-2);
+  font-size: 16px;
+  vertical-align: middle;
+  line-height: 1.4;
+}
+.reveal td.num   { font-family: 'JetBrains Mono', monospace; color: var(--good); font-weight: 600; }
+.reveal td.muted { color: var(--text-4); }
+.reveal td strong { color: var(--text); font-weight: 700; }
+.reveal td code { font-family: 'JetBrains Mono', monospace; background: var(--accent-soft); padding: 2px 7px; border-radius: 3px; color: var(--accent); font-size: 14px; font-weight: 500; }
+
+/* ----- Cards · subtle column dividers inside the body frame ----- */
+.cards-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.cards-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 22px; }
+.card {
+  background: transparent;
+  border: none;
+  border-left: 2px solid var(--border);
+  border-radius: 0;
+  padding: 0 0 0 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.card.accent { border-left: 2px solid var(--accent); }
+.card.good   { border-left: 2px solid var(--good); }
+.card.warn   { border-left: 2px solid var(--warn); }
+.card h3 { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3); }
+.card.accent h3 { color: var(--accent); }
+.card.good h3   { color: var(--good); }
+.card.warn h3   { color: var(--warn); }
+.card p, .card li { font-size: 15px; color: var(--text-2); line-height: 1.5; }
+.card ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 5px; }
+.card strong { color: var(--text); }
+
+/* ----- Code · subtle surface, no border (inside body frame) ----- */
+.reveal pre {
+  font-size: 13px;
+  margin: 0;
+  border-radius: 8px;
+  background: var(--surface);
+  border: none;
+  max-height: 100%;
+  overflow: hidden;
+}
+.reveal pre code {
+  font-family: 'JetBrains Mono', monospace;
+  padding: 18px 22px;
+  line-height: 1.55;
+  background: transparent;
+  color: var(--text);
+}
+.reveal :not(pre) > code {
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--accent-soft);
+  color: var(--accent);
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 0.92em;
+  font-weight: 500;
+}
+
+/* ----- Diagram (ASCII) · subtle surface, no border ----- */
+.diagram {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13.5px;
+  line-height: 1.55;
+  background: var(--surface);
+  border: none;
+  border-radius: 8px;
+  padding: 22px 28px;
+  white-space: pre;
+  color: var(--text-2);
+}
+.diagram .lbl { color: var(--accent); font-weight: 700; }
+.diagram .ok  { color: var(--good); font-weight: 600; }
+.diagram .wn  { color: var(--warn); font-weight: 600; }
+.diagram .mu  { color: var(--text-4); }
+
+/* ----- Callouts ----- */
+.callout {
+  background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+  padding: 14px 22px;
+  border-radius: 0 8px 8px 0;
+  font-size: 15px;
+  color: var(--text);
+}
+.callout.win  { background: var(--good-soft);  border-left-color: var(--good); }
+.callout.warn { background: var(--warn-soft);  border-left-color: var(--warn); }
+.callout h4 { color: var(--accent); margin-bottom: 6px; font-size: 12px; }
+.callout.win h4   { color: var(--good); }
+.callout.warn h4  { color: var(--warn); }
+.callout p { font-size: 15px; color: var(--text); margin: 0; line-height: 1.5; }
+.callout strong { color: var(--text); font-weight: 700; }
+
+/* ----- K-grid (rising/falling arms) ----- */
+.k-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.k-grid .arm {
+  padding: 0 0 0 18px;
+  background: transparent;
+  border: none;
+  border-left: 2px solid var(--border);
+}
+.k-grid .arm.up   { border-left: 2px solid var(--good); }
+.k-grid .arm.down { border-left: 2px solid var(--warn); }
+.k-grid .arm h4 { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 10px; }
+.k-grid .arm.up h4   { color: var(--good); }
+.k-grid .arm.down h4 { color: var(--warn); }
+.k-grid ul { font-size: 16px; padding-left: 20px; margin: 0; display: flex; flex-direction: column; gap: 6px; line-height: 1.4; color: var(--text-2); }
+
+/* ----- Timeline ----- */
+.timeline { display: flex; flex-direction: column; gap: 4px; }
+.timeline .row {
+  display: grid; grid-template-columns: 92px 16px 1fr; gap: 18px;
+  align-items: center;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border-soft);
+  font-size: 16px;
+}
+.timeline .date { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent); font-weight: 600; }
+.timeline .dot  { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; justify-self: center; }
+.timeline .text { color: var(--text); }
+.timeline .text strong { color: var(--text); }
+.timeline .row.now { background: var(--good-soft); margin: 0 -8px; padding: 11px 8px; border-radius: 6px; border-bottom: none; }
+.timeline .row.now .dot { background: var(--good); }
+.timeline .row.now .date { color: var(--good); }
+
+/* ----- Cost bars ----- */
+.cost-bars { display: flex; flex-direction: column; gap: 14px; }
+.cost-bar {
+  display: grid;
+  grid-template-columns: 320px 1fr 110px;
+  gap: 18px;
+  align-items: center;
+}
+.cost-bar .name { font-size: 15px; color: var(--text); }
+.cost-bar .name .small { display: block; color: var(--text-3); font-size: 12px; margin-top: 3px; line-height: 1.3; }
+.cost-bar .bar { height: 30px; background: var(--surface); border-radius: 6px; overflow: hidden; border: 1px solid var(--border-soft); }
+.cost-bar .fill { height: 100%; display: flex; align-items: center; padding: 0 14px; color: #fff; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; }
+.cost-bar.t1 .fill { background: var(--warn);   width: 100%; }
+.cost-bar.t2 .fill { background: #D97706;       width: 70%; }
+.cost-bar.t3 .fill { background: var(--good);   width: 11%; }
+.cost-bar.t4 .fill { background: #047857;       width: 6%; }
+.cost-bar .price { font-family: 'JetBrains Mono', monospace; font-size: 17px; color: var(--text); font-weight: 700; text-align: right; }
+
+/* ----- Pattern grid ----- */
+.pat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.pat {
+  background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px;
+  padding: 13px 16px; display: flex; flex-direction: column; gap: 6px;
+}
+.pat .n {
+  display: inline-flex; width: 22px; height: 22px;
+  background: var(--accent); color: #fff;
+  border-radius: 50%; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
+}
+.pat .name { font-size: 14px; font-weight: 700; color: var(--text); line-height: 1.3; }
+.pat .where { font-size: 11px; color: var(--text-3); }
+
+/* ----- Lesson options ----- */
+.lesson-options { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 22px; }
+.lesson-options .opt {
+  background: transparent;
+  border: none;
+  border-left: 2px solid var(--accent);
+  padding: 0 0 0 18px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.lesson-options .opt h4 { color: var(--accent); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; }
+.lesson-options .opt p { font-size: 15px; color: var(--text); margin-top: 4px; line-height: 1.4; }
+
+/* ----- CTA boxes ----- */
+.cta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+.cta-box {
+  background: transparent;
+  border: none;
+  border-left: 2px solid var(--accent);
+  padding: 0 0 0 18px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.cta-box h3 { color: var(--accent); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; }
+.cta-box .lead { font-size: 17px; color: var(--text); font-weight: 600; }
+.cta-box p { font-size: 14px; color: var(--text-2); line-height: 1.45; }
+.cta-box .qr {
+  margin-top: 12px;
+  width: 130px; height: 130px;
+  background: #fff;
+  border-radius: 8px;
+  padding: 6px;
+  display: block;
+}
+.cta-box .qr img { width: 100%; height: 100%; display: block; }
+.cta-box .qr-label {
+  margin-top: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+/* ----- Worksheet ----- */
+.worksheet {
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  padding: 18px;
+  background: transparent;
+}
+.worksheet table th { background: var(--surface); color: var(--text-3); font-size: 11px; padding: 11px 12px; border-bottom: 1.5px solid var(--text); }
+.worksheet table td { padding: 18px 12px; height: 36px; }
+
+/* ----- Recap ----- */
+.recap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 28px; }
+.recap-item {
+  display: grid; grid-template-columns: 28px 1fr; gap: 14px; align-items: start;
+  padding: 11px 0; border-bottom: 1px solid var(--border-soft);
+}
+.recap-item .icon { font-size: 18px; color: var(--accent); line-height: 1; }
+.recap-item h3 { font-size: 16px; color: var(--text); line-height: 1.3; }
+.recap-item p  { font-size: 13px; color: var(--text-3); margin-top: 4px; line-height: 1.4; }
+
+/* ----- Stage table (HITL part 6) ----- */
+.stage-table { font-size: 13px; }
+.stage-table tr.s1 td:first-child strong { color: var(--text); }
+.stage-table tr.s2 { background: var(--warn-soft); }
+.stage-table tr.s2 td:first-child strong { color: var(--warn); }
+.stage-table tr.s3 { background: var(--good-soft); }
+.stage-table tr.s3 td:first-child strong { color: var(--good); }
+.stage-table tr.s4 { background: var(--accent-soft); }
+.stage-table tr.s4 td:first-child strong { color: var(--accent); }
+
+@media print {
+  .reveal .slides section { padding: 56px 72px 56px !important; }
+  body, html, .reveal { background: var(--bg) !important; }
+}
+</style>
+</head>
+
+<body>
+<div class="reveal"><div class="slides">
+
+<!-- 1 — COVER -->
+<section class="cover">
+  <div class="eyebrow"><span class="dot"></span>Boulder Startup Week 2026 · Thu May 7 · RegenHub</div>
+  <h1>Architecting<br/><em>Agentic Workflows</em><br/>for the Lean 2026 Startup</h1>
+  <div class="author">Sophia Stein <span class="role">· AI Architect · Local LLM &amp; Agentic Workflows</span></div>
+  <div class="meta">agenticarchitect.ai/blog &nbsp;·&nbsp; github.com/sudosoph</div>
+</section>
+
+<!-- 2 — THE PROMISE -->
+<section class="promise">
+  <div class="promise-text">By the end of this hour, you'll have an agent running tomorrow morning that does customer discovery while you sleep.</div>
+  <div class="promise-sub">Open source · ~$8&ndash;$15/mo · forkable · yours when you walk out.</div>
+</section>
+
+<!-- 3 — LIVE DEMO -->
+<section class="demo">
+  <h1><span class="pulse"></span>LIVE</h1>
+  <div class="sub">Switching to n8n + Gmail · the agent is mid-flight · narrating drafts as they populate</div>
+  <div class="signal">⌘+tab to browser · stay here ~90 seconds</div>
+</section>
+
+<!-- =====================================================================
+     PART 01 — FOUNDATIONS
+     ===================================================================== -->
+
+<!-- 4 — DIVIDER · FOUNDATIONS -->
+<section class="divider">
+  <div class="part">PART 01 · 5 MIN · FOUNDATIONS</div>
+  <h2 class="question">What is an agent, really?</h2>
+  <div class="sub">Same loop in every framework. Same three layers in every system. Worth getting on the same page before we go further.</div>
+</section>
+
+<!-- 5 — REACT LOOP -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Foundations · the loop every agent runs</div>
+  <h2>The REACT loop.</h2>
+  <div class="body">
+    <div class="diagram">
+       ┌──────────────────────┐
+       │   <span class="lbl">REASON</span>             │  what should I do next?
+       └──────────┬───────────┘
+                  ↓
+       ┌──────────────────────┐
+       │   <span class="lbl">ACTION</span>             │  call a tool · query data · make a draft
+       └──────────┬───────────┘
+                  ↓
+       ┌──────────────────────┐
+       │   <span class="lbl">OBSERVATION</span>        │  what came back · was it enough
+       └──────────┬───────────┘
+                  ↓
+       <span class="mu">(loop until stop condition is met)</span>
+    </div>
+    <div class="callout"><h4>Why this matters when you debug</h4><p>Wrong reasoning → bad prompt or model. Wrong action → tool wired wrong. Wrong observation → context engineering issue. <strong>Three steps. Same loop in every framework.</strong></p></div>
+  </div>
+  <div class="footer"><span class="tag">leverage</span><span class="cite">ReAct paper · Yao et al. 2022 · standard across 2026 frameworks</span></div>
+</section>
+
+<!-- 6 — MODEL + RUNTIME + TOOLS -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Foundations · three layers in every agent</div>
+  <h2>An agent has three layers. Pick each one deliberately.</h2>
+  <div class="body">
+    <table>
+      <thead><tr><th style="width:18%;">Layer</th><th style="width:38%;">What it is</th><th style="width:22%;">Today's pick</th><th>If you outgrow it</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Model</strong></td><td>The reasoning engine. Decides what to do, drafts output, decides when to stop.</td><td><strong>Sonnet 4.6 + Haiku 4.5</strong></td><td>Qwen 3.6 (local) · DeepSeek (frontier OSS)</td></tr>
+        <tr><td><strong>Runtime</strong></td><td>Manages the loop, state, tool calls, retries, audit log.</td><td><strong>n8n</strong> (visual, OSS)</td><td>LangGraph (code-first) · Temporal (durable)</td></tr>
+        <tr><td><strong>Tools</strong></td><td>External capabilities the model can invoke.</td><td>Claude <code>web_search</code> · Firecrawl · Gmail · Sheets</td><td>+ MCP servers as you grow (HubSpot · Linear · Stripe)</td></tr>
+      </tbody>
+    </table>
+    <p class="kicker">For the next 25 minutes we're going to make exactly these choices for our discovery agent.</p>
+  </div>
+  <div class="footer"><span class="tag">durability</span><span class="cite">AMD AI Dev 26 · Personal Agents w/ OSS Models</span></div>
+</section>
+
+<!-- =====================================================================
+     PART 02 — THE 2026 LANDSCAPE
+     ===================================================================== -->
+
+<!-- 7 — DIVIDER · STATE OF THE STACK -->
+<section class="divider">
+  <div class="part">PART 02 · 8 MIN · THE 2026 LANDSCAPE</div>
+  <h2 class="question">What changed in 2026<br/>that makes your agent possible?</h2>
+  <div class="sub">Five forces. Each one is something specific that landed in the last 18 months and that you can use today.</div>
+</section>
+
+<!-- 8 — K-SHAPE -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Landscape · Force 01 · The shape of work</div>
+  <h2>Software work split in two.</h2>
+  <div class="body">
+    <div class="k-grid">
+      <div class="arm up">
+        <h4>Rising in value</h4>
+        <ul>
+          <li>Judgment &amp; taste</li>
+          <li>Problem framing</li>
+          <li>Stakeholder alignment</li>
+          <li>Decision velocity</li>
+          <li>Knowing what to ask</li>
+        </ul>
+      </div>
+      <div class="arm down">
+        <h4>Falling in value</h4>
+        <ul>
+          <li>Syntax memorization</li>
+          <li>Boilerplate production</li>
+          <li>Isolated coding speed</li>
+          <li>Rote implementation</li>
+          <li>Doing each task by hand</li>
+        </ul>
+      </div>
+    </div>
+    <p class="kicker"><em>"When software becomes tokens, advantage shifts to execution velocity."</em> — the line that stayed with me from the keynote.</p>
+  </div>
+  <div class="footer"><span class="tag">leverage</span><span class="cite">Anush Elangovan, AMD · AI Dev 26 SF · Apr 28, 2026</span></div>
+</section>
+
+<!-- 9 — BUILDING BLOCKS -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Landscape · Force 02 · The new craft</div>
+  <h2>Software is now <em>assembled</em>, not written.</h2>
+  <div class="body">
+    <div class="cards-2">
+      <div class="card good">
+        <h3>AI building blocks · pick one per layer</h3>
+        <ul>
+          <li><strong>Reasoning model</strong> · Sonnet 4.6 (paid) or Qwen 3.6 (local)</li>
+          <li><strong>Orchestration runtime</strong> · n8n (visual) or LangGraph (code)</li>
+          <li><strong>Web search</strong> · Claude <code>web_search</code> tool</li>
+          <li><strong>Web extract</strong> · Firecrawl</li>
+          <li><strong>Memory / knowledge</strong> · Chroma (vectors) or Neo4j (graph)</li>
+          <li><strong>Durability</strong> · Temporal (when long-running)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Non-AI blocks · what you already have</h3>
+        <ul>
+          <li><strong>Storage</strong> · Google Sheets or Postgres</li>
+          <li><strong>Comms</strong> · Gmail or Slack</li>
+          <li><strong>Auth</strong> · whatever you use today</li>
+          <li><strong>Payments</strong> · Stripe</li>
+          <li><strong>Logging</strong> · the audit log we'll build in Sheets</li>
+        </ul>
+      </div>
+    </div>
+    <p class="kicker">The architect's discipline: don't shop the catalog · pick deliberately, layer by layer.</p>
+  </div>
+  <div class="footer"><span class="tag">leverage</span><span class="cite">Andrew Ng · DeepLearning.AI keynote · AI Dev 26 SF</span></div>
+</section>
+
+<!-- 10 — MODEL LANDSCAPE -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Landscape · Force 03 · The model market · May 2026</div>
+  <h2>Models available today.</h2>
+  <div class="body">
+    <table>
+      <thead><tr><th>Model</th><th>In/M</th><th>Out/M</th><th>Released</th><th>Use for</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Claude Opus 4.7</strong></td><td class="num">$5</td><td class="num">$25</td><td class="muted">Apr 16</td><td>Hard edges only</td></tr>
+        <tr><td><strong>Claude Sonnet 4.6</strong></td><td class="num">$3</td><td class="num">$15</td><td class="muted">—</td><td>Drafting · nuance · voice match</td></tr>
+        <tr><td><strong>Claude Haiku 4.5</strong></td><td class="num">$1</td><td class="num">$5</td><td class="muted">Oct 2025</td><td>Routing · classify · extract</td></tr>
+        <tr><td>GPT-5.5</td><td class="num">$5</td><td class="num">$30</td><td class="muted">Apr 23</td><td>Doubled price · OAI-locked</td></tr>
+        <tr><td>Gemini 3.1 Pro / Flash</td><td class="num">$2 / $0.50</td><td class="num">$12 / $3</td><td class="muted">—</td><td>If on GCP / budget tier</td></tr>
+        <tr><td><strong>Qwen 3.6-27B</strong> (local)</td><td class="num">~$0</td><td class="num">~$0</td><td class="muted">Apr 2026</td><td>Classification · claims Sonnet parity</td></tr>
+        <tr><td>DeepSeek V3.2</td><td class="num">$0.14</td><td class="num">$1.10</td><td class="muted">—</td><td>Cheapest frontier reasoning</td></tr>
+      </tbody>
+    </table>
+    <p class="kicker">Today's stack: <strong>Sonnet 4.6 + Haiku 4.5</strong>. Two models, one cascade — cost reasoning in Part 5.</p>
+  </div>
+  <div class="footer"><span class="tag">cash</span><span class="cite">Vendor pricing pages · May 4, 2026</span></div>
+</section>
+
+<!-- 11 — TIMELINE -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Landscape · Force 04 · The last 60 days</div>
+  <h2>This deck was current six hours before doors opened.</h2>
+  <div class="body">
+    <div class="timeline">
+      <div class="row"><span class="date">Apr 8</span><span class="dot"></span><span class="text"><strong>Claude Managed Agents</strong> · public beta · $0.08/session-hour</span></div>
+      <div class="row"><span class="date">Apr 14</span><span class="dot"></span><span class="text"><strong>Claude Code Routines</strong> · cron + GitHub-event + API triggers</span></div>
+      <div class="row"><span class="date">Apr 16</span><span class="dot"></span><span class="text"><strong>Opus 4.7</strong> + <strong>MCP RCE flaw</strong> · ~200K servers exposed · Anthropic confirmed by-design</span></div>
+      <div class="row"><span class="date">Apr 23</span><span class="dot"></span><span class="text"><strong>GPT-5.5</strong> · doubled to $5/$30 per million tokens</span></div>
+      <div class="row"><span class="date">Apr 25</span><span class="dot"></span><span class="text"><strong>PocketOS DB nuked</strong> · Cursor agent · 9 seconds · the cautionary tale we cover in Part 6</span></div>
+      <div class="row now"><span class="date">May 7</span><span class="dot"></span><span class="text"><strong>You · here · now · BSW Workshop</strong></span></div>
+    </div>
+  </div>
+  <div class="footer"><span class="tag">strategy</span><span class="cite">Vendor blogs · The Register · conference notes</span></div>
+</section>
+
+<!-- 12 — OSS THESIS -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Landscape · Force 05 · The economic posture</div>
+  <h2>When to choose open source · when to pay.</h2>
+  <div class="body">
+    <div class="cards-2">
+      <div class="card good">
+        <h3>Choose open source for</h3>
+        <ul>
+          <li><strong>Distribution.</strong> Every tool we'll touch today won by being free first.</li>
+          <li><strong>Cost.</strong> $135/mo → $15/mo · same workflow · one weekend of Docker.</li>
+          <li><strong>Optionality.</strong> Vendor changes pricing, you're not stranded.</li>
+          <li><strong>Speed.</strong> Forking is faster than feature-requesting.</li>
+          <li><strong>Community.</strong> Bug reports become PRs · you compound.</li>
+        </ul>
+      </div>
+      <div class="card accent">
+        <h3>Pay for</h3>
+        <ul>
+          <li>Frontier reasoning + voice match (Sonnet 4.6)</li>
+          <li>Hosted SaaS for things you never want to operate</li>
+          <li>Day-zero APIs for new model releases</li>
+          <li>SLA-backed reliability when stakes are real</li>
+        </ul>
+        <p style="font-size:14px; color:var(--text-3); margin-top:8px;">Today's demo uses paid Sonnet for drafting. Nothing local matches voice match yet. The honest tradeoff.</p>
+      </div>
+    </div>
+  </div>
+  <div class="footer"><span class="tag">strategy</span></div>
+</section>
+
+<!-- 13 — FOUNDER MATH -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Landscape · The shape of the lean 2026 team</div>
+  <h2>The new founder math.</h2>
+  <div class="body">
+    <div class="cards-2">
+      <div class="card">
+        <h3>2023</h3>
+        <p style="font-size:16px;">4 engineers · product · ops · marketing · support</p>
+        <p style="font-size:42px; font-weight:900; color:var(--warn); line-height:1; margin-top:14px;">$40K<span style="font-size:0.45em; color:var(--text-3); font-weight:500;">/mo loaded</span></p>
+      </div>
+      <div class="card good">
+        <h3>2026</h3>
+        <p style="font-size:16px;">1 founder + agent stack · same surface area</p>
+        <p style="font-size:42px; font-weight:900; color:var(--good); line-height:1; margin-top:14px;">$300<span style="font-size:0.45em; color:var(--text-3); font-weight:500;">/mo total</span></p>
+      </div>
+    </div>
+    <div class="callout win"><h4>Real proof, not theory</h4><p><strong>Pieter Levels:</strong> $3M+ ARR, zero employees · <strong>Ben Broca / Polsia:</strong> $1M+ ARR, 1,100 client cos solo. The wall is around $50&ndash;150K MRR. That's a runway, not a problem.</p></div>
+  </div>
+  <div class="footer"><span class="tag">leverage</span><span class="cite">Public ARR posts · HN/IH consensus · April 2026</span></div>
+</section>
+
+<!-- 14 — STOP ASKING (real quote) -->
+<section class="quote">
+  <blockquote>Stop asking AI questions.<br/>Start giving AI tasks.</blockquote>
+  <div class="attrib">Adapted from Henry Ward, CEO Carta · AI Agent Conference NYC · May 4, 2026</div>
+  <div class="anchor">
+    <h4>Tasking, concretely</h4>
+    <p><strong>1.</strong> Define a typed JSON schema &nbsp; <strong>2.</strong> Give 5 in-context examples &nbsp; <strong>3.</strong> Set a human checkpoint &nbsp; <strong>4.</strong> Hit Run.</p>
+  </div>
+</section>
+
+<!-- 15 — WHAT THIS HOUR DELIVERS -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Landscape · The contract for this hour</div>
+  <h2>What this hour delivers.</h2>
+  <div class="body">
+    <div class="cards-3">
+      <div class="card accent">
+        <h3>Blueprint for Autonomy</h3>
+        <p style="font-size:13px; color:var(--text-3);">From the description</p>
+        <p>The 3-axis matrix · 90-sec worksheet · Green/Yellow/Red for your tasks.</p>
+      </div>
+      <div class="card accent">
+        <h3>Live build-along</h3>
+        <p style="font-size:13px; color:var(--text-3);">From the description</p>
+        <p>The Founder's Discovery Engine · clonable n8n JSON · MIT licensed on GitHub.</p>
+      </div>
+      <div class="card accent">
+        <h3>HITL standard</h3>
+        <p style="font-size:13px; color:var(--text-3);"><strong>HITL</strong> = Human-in-the-Loop</p>
+        <p>The 4-stage trust ladder · voice.md pattern · 10× bandwidth math.</p>
+      </div>
+    </div>
+    <p class="kicker">Plus — <strong>12 transferable patterns</strong> &amp; <strong>7 other agents</strong> on the same stack.</p>
+  </div>
+  <div class="footer"><span class="tag">ROI</span></div>
+</section>
+
+<!-- =====================================================================
+     PART 03 — BLUEPRINT FOR AUTONOMY
+     ===================================================================== -->
+
+<!-- 16 — DIVIDER · BLUEPRINT -->
+<section class="divider">
+  <div class="part">PART 03 · 8 MIN · BLUEPRINT FOR AUTONOMY</div>
+  <h2 class="question">Which 20% of your manual tasks<br/>should be 80% automated?</h2>
+  <div class="sub">The same question every founder has. We answer it in eight minutes.</div>
+</section>
+
+<!-- 17 — 3-AXIS MATRIX -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Blueprint · The framework · three questions to ask of any task</div>
+  <h2>The 20/80 Blueprint.</h2>
+  <div class="body">
+    <div class="cards-3">
+      <div class="card accent">
+        <h3>Volume</h3>
+        <p>How often does this task come up?</p>
+        <p style="font-size:14px;"><strong>High</strong> — daily/weekly. <strong>Low</strong> — occasional. <em>Don't automate low-volume; build cost will exceed time saved.</em></p>
+      </div>
+      <div class="card accent">
+        <h3>Determinism</h3>
+        <p>Are the steps the same every time?</p>
+        <p style="font-size:14px;"><strong>Deterministic</strong> — rules apply. <strong>Ambiguous</strong> — needs judgment. <em>Ambiguous tasks need a human checkpoint.</em></p>
+      </div>
+      <div class="card accent">
+        <h3>Reversibility</h3>
+        <p>If the agent's wrong, what breaks?</p>
+        <p style="font-size:14px;"><strong>Low-stakes</strong> — recoverable. <strong>Irreversible</strong> — not. <em>Irreversible tasks should never be fully automated.</em></p>
+      </div>
+    </div>
+    <div class="callout">
+      <p><strong style="color:var(--good);">GREEN</strong> = high vol × deterministic × reversible &nbsp;·&nbsp; <strong style="color:#D97706;">YELLOW</strong> = high vol × ambiguous × reversible · <em>HITL</em> &nbsp;·&nbsp; <strong style="color:var(--warn);">RED</strong> = anything irreversible · <em>don't</em></p>
+    </div>
+  </div>
+  <div class="footer"><span class="tag">focus</span></div>
+</section>
+
+<!-- 18 — GREEN / YELLOW / RED EXAMPLES -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Blueprint · Examples for a lean startup</div>
+  <h2>Green / Yellow / Red — pick your first agent.</h2>
+  <div class="body">
+    <div class="cards-3">
+      <div class="card good">
+        <h3>GREEN · automate now</h3>
+        <ul>
+          <li>Lead enrichment</li>
+          <li>Competitor monitoring</li>
+          <li>Content repurposing</li>
+          <li>Form/signup triage</li>
+          <li>Meeting notes → CRM</li>
+          <li>Daily metric digests</li>
+        </ul>
+      </div>
+      <div class="card" style="border-left: 3px solid #D97706;">
+        <h3 style="color:#D97706;">YELLOW · with HITL</h3>
+        <ul>
+          <li>Outbound copy</li>
+          <li>Pricing analysis</li>
+          <li>Support drafts</li>
+          <li>Investor updates</li>
+          <li>Cold outreach</li>
+          <li>Refund decisions</li>
+        </ul>
+      </div>
+      <div class="card warn">
+        <h3>RED · don't automate</h3>
+        <ul>
+          <li>Hiring decisions</li>
+          <li>Product roadmap</li>
+          <li>Customer escalations</li>
+          <li>Strategic pivots</li>
+          <li>Cofounder conflicts</li>
+          <li>Legal terms</li>
+        </ul>
+      </div>
+    </div>
+    <p class="kicker">Today's demo lives in <strong style="color:#D97706;">YELLOW</strong> — cold outreach with a human checkpoint.</p>
+  </div>
+  <div class="footer"><span class="tag">focus</span></div>
+</section>
+
+<!-- 19 — WORKSHEET -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Blueprint · 90 seconds · I'll be quiet · don't watch me · write</div>
+  <h2>Your turn. Five tasks.</h2>
+  <div class="body">
+    <div class="worksheet">
+      <table>
+        <thead><tr><th>Task you do every week</th><th>Volume<br/>H/L</th><th>Determinism<br/>D/A</th><th>Reversibility<br/>Low/High</th><th>Color<br/>G/Y/R</th></tr></thead>
+        <tbody>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:16px; color:var(--text);">Pick one Green from your list. <strong style="color:var(--good);">That's your first agent.</strong></p>
+  </div>
+  <div class="footer"><span class="tag">focus</span></div>
+</section>
+
+<!-- =====================================================================
+     PART 04 — LIVE BUILD-ALONG
+     ===================================================================== -->
+
+<!-- 20 — DIVIDER · BUILD -->
+<section class="divider">
+  <div class="part">PART 04 · 25 MIN · LIVE BUILD-ALONG</div>
+  <h2 class="question">The Founder's<br/>Discovery Engine.</h2>
+  <div class="sub">A customer-discovery agent that runs while you sleep. n8n + Claude + Gmail. Open source. ~$8&ndash;$15/mo.</div>
+</section>
+
+<!-- 21 — ONE-SCREEN SPEC -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Build · One-screen spec</div>
+  <h2>What we're building.</h2>
+  <div class="body">
+    <div class="diagram" style="font-size:14px;">
+<span class="lbl">DAILY 7AM</span>     agent wakes up via cron
+   ↓
+<span class="ok">LISTENS</span>      Hacker News · Reddit · Product Hunt · X for ICP signals
+   ↓
+<span class="ok">RESEARCHES</span>   each lead · pain mentions · hiring posts · complaints
+   ↓
+<span class="ok">DRAFTS</span>       customer-discovery email in <span class="wn">YOUR voice</span>  <span class="mu">(interview ask · not pitch)</span>
+   ↓
+<span class="ok">DROPS</span>        Gmail Drafts · <span class="wn">never sends</span> · you approve and send
+   ↓
+<span class="ok">FOLLOWS UP</span>   after 5 days if no reply
+   ↓
+<span class="ok">DIGEST</span>       7:30am · "5 drafts · 3 follow-ups · 1 reply yesterday"
+    </div>
+    <div class="callout win"><p><strong>Cost per run:</strong> ~$0.21 &nbsp;·&nbsp; <strong>Monthly:</strong> ~$6 paid · ~$8 max-DIY &nbsp;·&nbsp; <strong>Build today:</strong> 25 min</p></div>
+  </div>
+  <div class="footer"><span class="tag">time</span><span class="tag">leverage</span><span class="tag">cash</span></div>
+</section>
+
+<!-- 22 — ARCHITECTURE -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Build · The architecture · the centerpiece</div>
+  <h2>Six nodes · three sub-agents · one workflow.</h2>
+  <div class="body">
+    <div class="diagram" style="font-size:12.5px;">
+<span class="lbl">TRIGGER</span>     cron 7am · manual webhook
+   ↓
+<span class="lbl">READ</span>        Sheets("ICP") + Drive("voice.md")  <span class="mu">// config-as-files</span>
+   ↓
+<span class="lbl">DISCOVERY + EXTRACT</span> · sub-agent #1 · <span class="ok">Haiku 4.5 + web_search</span>
+   ↓ <span class="mu">[{ person, signal_type, source_url, evidence_quote, score }]</span>
+<span class="lbl">DEDUPE</span>      against Sheets("Sent") · <span class="mu">idempotency = re-run safety</span>
+   ↓
+<span class="lbl">ENRICH</span>      Firecrawl on top-N · <span class="ok">Haiku</span> 2-line summary
+   ↓
+<span class="lbl">DRAFT</span> · sub-agent #2 · <span class="ok">Sonnet 4.6 + voice.md + 5 examples</span>
+   ↓
+<span class="wn">HITL GATE   Gmail.createDraft  ·  NEVER sends</span>
+   ↓
+<span class="lbl">DIGEST</span> · sub-agent #3 · <span class="ok">Sonnet</span> · daily 7:30am
+   ↓
+<span class="lbl">LOG</span>         Sheets("Runs") · audit + cost meter
+    </div>
+    <p class="kicker">Three Claude prompts. Each gets only the context it needs. None see the whole conversation. <strong>Sub-agent decomposition for cost.</strong></p>
+  </div>
+  <div class="footer"><span class="tag">durability</span><span class="cite">github.com/sudosoph/bsw-growth-agent · MIT</span></div>
+</section>
+
+<!-- 23 — STEP 1 TRIGGERS -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Build · Step 1/8 · ~3 min</div>
+  <h2>Triggers — how your agent wakes up.</h2>
+  <div class="body">
+    <table>
+      <thead><tr><th>Trigger</th><th>Plain English</th><th>When it fires</th><th>Founder use case</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Cron</strong></td><td>A timer · "run this every X"</td><td>Schedule · e.g. 7am daily</td><td>Recurring jobs · daily / weekly</td></tr>
+        <tr><td><strong>Webhook</strong></td><td>A doorbell · another system rings · agent answers</td><td>Event from elsewhere</td><td>Form fill · signup · support ticket</td></tr>
+        <tr><td><strong>Manual</strong></td><td>You · clicking Run</td><td>You decide</td><td>Testing · ad-hoc demos</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><p><strong>Today's choice:</strong> <code>cron(0 7 * * *)</code> — daily at 7am — plus a manual trigger for the live demo. Almost every SMB agent starts as cron.</p></div>
+  </div>
+  <div class="footer"><span class="tag">durability</span></div>
+</section>
+
+<!-- 24 — STEP 2 CONFIG-AS-FILES -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Build · Step 2/8 · the most important pattern in this hour</div>
+  <h2>Config-as-files. Not config-as-prompts.</h2>
+  <div class="body">
+    <p style="font-size:16px;">Every input that drives the agent — voice, ICP, schemas, examples, exclusion lists — lives as a <strong style="color:var(--good);">versioned editable file</strong> in Drive or Sheets. Not buried in workflow nodes.</p>
+    <table>
+      <thead><tr><th>File</th><th>Lives in</th><th>Controls</th><th>Edited by</th></tr></thead>
+      <tbody>
+        <tr><td><code>voice.md</code></td><td>Drive</td><td>Tone · words · 5 example emails</td><td>Founder · rarely</td></tr>
+        <tr><td><code>icp.md</code></td><td>Drive</td><td>Who we look for · keywords</td><td>Founder · monthly</td></tr>
+        <tr><td><code>do-not-contact.csv</code></td><td>Sheets</td><td>Exclusion list</td><td>Anyone · any time</td></tr>
+        <tr><td><code>schemas.md</code></td><td>Drive</td><td>Structured JSON output shapes</td><td>Architect · rarely</td></tr>
+      </tbody>
+    </table>
+    <div class="callout win"><p>The shorthand: <strong>look at every place in your workflow where a string of English drives the agent's behavior. That's a file. Not a prompt. A file. With version history.</strong></p></div>
+  </div>
+  <div class="footer"><span class="tag">agility</span></div>
+</section>
+
+<!-- 25 — STEP 3 DISCOVERY -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Build · Step 3/8 · sub-agent #1</div>
+  <h2>Discovery: one node, one API, one call.</h2>
+  <div class="body">
+    <pre><code class="language-json">// Claude Haiku 4.5 with web_search tool enabled
+{
+  "model": "claude-haiku-4-5",
+  "tools": [{ "type": "web_search_20250305" }],
+  "system": "[ICP keywords from icp.md]",
+  "messages": [{
+    "role": "user",
+    "content": "Find founders publicly displaying ICP signals on
+                HN, Reddit, Product Hunt this week. Return JSON:
+                [{ person, signal_type, source_url,
+                   evidence_quote, score 0-10 }]"
+  }]
+}</code></pre>
+    <div class="cards-2">
+      <div class="card good"><h3>Why Haiku, not Sonnet</h3><p>Sub-agent #1 is classification. $1/$5 per million tokens is fine. Save Sonnet for nuance. <strong>This is the cascade pattern.</strong></p></div>
+      <div class="card good"><h3>Why Claude search, not Perplexity</h3><p>One vendor · one key · one node. ~$1.50/mo more at our scale. <strong>The simplicity is worth it.</strong></p></div>
+    </div>
+  </div>
+  <div class="footer"><span class="tag">cash</span></div>
+</section>
+
+<!-- 26 — STEP 4 DEDUP -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Build · Step 4/8 · idempotency = re-run safety</div>
+  <h2>Dedup against state.</h2>
+  <div class="body">
+    <div class="callout warn"><p><strong>Idempotent</strong> = running the agent twice produces the same outcome as running it once. <strong style="color:var(--warn);">Without it:</strong> bug fix triggers a re-run · missed cron triggers a re-run · demo on stage triggers a re-run · and you double-email five prospects who block you and tell their friends.</p></div>
+    <div class="diagram" style="font-size:13px;">
+<span class="lbl">THE PATTERN</span>  ·  three lines in an n8n Code node
+
+  1.  Maintain a Sheets("Sent") log of every contact.
+  2.  Filter discovery results against the log.
+  3.  Only proceed with the new ones.
+
+<span class="mu">const sent  = await readSheet('Sent', 'email');
+const fresh = candidates.filter(c => !sent.includes(c.email));
+return fresh;</span>
+    </div>
+    <p class="kicker">Plumbing. The unsexy stuff that separates "demo agent" from "agent that runs every day."</p>
+  </div>
+  <div class="footer"><span class="tag">durability</span></div>
+</section>
+
+<!-- 27 — STEP 5 ENRICHMENT -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Build · Step 5/8 · cheap-fast first</div>
+  <h2>Progressive enrichment.</h2>
+  <div class="body">
+    <div class="diagram">
+Discovery <span class="mu">(cheap, fast)</span>   →  all 30 candidates
+   ↓ score · keep top <span class="lbl">N=5</span>
+Enrich <span class="mu">(expensive, deep)</span>  →  top 5 only
+   ↓
+<span class="ok">Firecrawl</span> on company.com    →  markdown extract
+   ↓
+<span class="ok">Haiku 4.5</span> · "in 2 sentences, what does this co. do?"
+   ↓
+Pass to drafting node
+    </div>
+    <div class="callout"><h4>About Firecrawl</h4><p><strong>Apache 2.0 OSS.</strong> Self-host on Docker for free or Cloud at $83/mo. Best signal-to-noise on JS-heavy sites.</p></div>
+  </div>
+  <div class="footer"><span class="tag">cash</span></div>
+</section>
+
+<!-- 28 — STEP 6 DRAFTING -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Build · Step 6/8 · sub-agent #2 · the only premium-token step</div>
+  <h2>Drafting — Sonnet 4.6 + voice.md.</h2>
+  <div class="body">
+    <pre><code class="language-json">{
+  "model": "claude-sonnet-4-6",
+  "system": "[contents of voice.md] + [5 example emails]",
+  "messages": [{
+    "role": "user",
+    "content": "Draft a customer-discovery email to {person}.
+                Their signal: {evidence_quote}
+                Source: {source_url}
+                Their company context: {enriched_summary}
+
+                Follow voice.md exactly. Interview ask, not pitch.
+                Soft CTA. 80-110 words."
+  }]
+}</code></pre>
+    <div class="cards-2">
+      <div class="card good"><h3>Why Sonnet here</h3><p>Voice match is where quality matters. Haiku writes generic-friendly. Sonnet reads voice.md and writes like the person who wrote those examples.</p></div>
+      <div class="card good"><h3>Why 5 examples</h3><p>In-context examples beat prompt instructions. The discipline of writing 5 good emails is what makes voice work. Few-shot &gt; zero-shot.</p></div>
+    </div>
+  </div>
+  <div class="footer"><span class="tag">leverage</span></div>
+</section>
+
+<!-- 29 — voice.md content -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Build · what's in voice.md</div>
+  <h2>The file that does the heavy lifting.</h2>
+  <div class="body">
+    <pre><code class="language-markdown"># Sophia's voice — for outbound writing
+
+## Posture
+- Direct, no fluff. Short sentences. Cut adverbs.
+- Specific over abstract. Numbers over adjectives.
+- Confident but not arrogant. Assume the reader is smart.
+
+## Words I use
+"architecture", "compounding", "leverage", "the math here is"
+
+## Words I never use
+"synergy", "unlock", "revolutionary", "I hope this finds you well"
+
+## Email structure (cold)
+1. One-line context: how I found you (specific)
+2. Two-line observation: something specific about your situation
+3. One question I'd ask
+4. One sentence on what I do
+5. Soft CTA: "worth 15 minutes Thursday?"
+
+## Examples
+[5 real emails — see voice-md-template handout]</code></pre>
+    <p class="kicker">The agent inherits your taste through examples, not adjectives. If you can't write 5 good examples, the agent can't either.</p>
+  </div>
+  <div class="footer"><span class="tag">agility</span></div>
+</section>
+
+<!-- 30 — STEP 7 HITL GATE -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Build · Step 7/8 · the HITL gate</div>
+  <h2>Human-in-the-Loop (HITL): the agent drafts. <em>You</em> send.</h2>
+  <div class="body">
+    <div class="cards-2">
+      <div class="card good">
+        <h3>What it does</h3>
+        <pre style="font-size:12px;"><code class="language-text">Drafts land in Gmail Drafts folder
+   ↓
+You skim · edit ~2 words · hit Send
+   ↓
+~10 seconds per draft
+   ↓
+~300 personalized emails / month
+   ↓
+~50 minutes of YOUR time / month</code></pre>
+        <p style="font-size:13px; color:var(--text-3); margin-top:6px;"><strong>HITL</strong> = a checkpoint where a human reviews agent output before it goes external.</p>
+      </div>
+      <div class="card good">
+        <h3>What it gives you</h3>
+        <p style="font-size:15px;"><strong>The 10× output math the workshop description promised.</strong></p>
+        <ul style="font-size:14px;">
+          <li><strong>Bandwidth scales</strong> · 90 min/day → 5–10 min/day on outbound</li>
+          <li><strong>Voice never drifts</strong> · every send goes through your eyes</li>
+          <li><strong>Track record builds</strong> · approved drafts = data for graduating up the trust ladder</li>
+        </ul>
+        <p style="font-size:13px; color:var(--good); margin-top:6px;"><strong>10 hours/week back.</strong> Goes to product · calls · fundraising.</p>
+      </div>
+    </div>
+  </div>
+  <div class="footer"><span class="tag">safety</span><span class="tag">leverage</span></div>
+</section>
+
+<!-- 31 — STEP 8 DIGEST + LOG -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Build · Step 8/8 · sub-agent #3 · daily wrap</div>
+  <h2>Daily digest + audit log.</h2>
+  <div class="body">
+    <div class="cards-2">
+      <div class="card accent">
+        <h3>The digest · 7:30am</h3>
+        <pre style="font-size:12px;"><code class="language-text">Subject: Discovery Pulse — May 8
+
+Today:
+  · 5 new drafts queued
+  · 3 follow-ups ready
+  · 1 reply yesterday from @kbrant
+
+Cost today:  $0.21
+Top signal:  pricing-frustration (n=2)
+Your move:   approve before 5pm</code></pre>
+      </div>
+      <div class="card accent">
+        <h3>The audit log · Sheets</h3>
+        <pre style="font-size:12px;"><code class="language-text">date · leads_found · drafts ·
+  cost_usd · avg_score ·
+  top_signal · errors
+
+2026-05-07 · 30 · 5 · 0.21 ·
+  7.4 · pricing · 0
+2026-05-08 · 28 · 5 · 0.19 ·
+  6.9 · hiring  · 0</code></pre>
+      </div>
+    </div>
+    <p class="kicker">Trust gets built through visible track record. After two weeks of high approval rates, you can promote the agent to Stage 3.</p>
+  </div>
+  <div class="footer"><span class="tag">safety</span></div>
+</section>
+
+<!-- 32 — FOLLOW-UP -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Build · Bonus · same architecture · different inputs</div>
+  <h2>Follow-up sub-workflow.</h2>
+  <div class="body">
+    <div class="diagram">
+<span class="lbl">SECOND CRON</span> · daily 8am
+
+  Query Gmail label "Sent — Discovery"
+       ↓
+  For each thread:
+    · elapsed days since last message
+    · any reply received
+       ↓
+  If 5+ days AND no reply:
+       ↓
+    Read full thread context
+       ↓
+    <span class="ok">Sonnet 4.6</span> · draft a follow-up that
+    <span class="wn">references the original thread</span>  <span class="mu">(NOT a copy-paste reminder)</span>
+       ↓
+    Gmail.createDraft → you approve
+    </div>
+    <p class="kicker">Same architecture as Step 6. Different inputs. <strong>Once you've built one agent, you've built five.</strong></p>
+  </div>
+  <div class="footer"><span class="tag">leverage</span></div>
+</section>
+
+<!-- 33 — PLUMBING PRIMITIVES -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Build · Summary · what we just used</div>
+  <h2>Plumbing primitives <span style="font-size:18px; font-weight:500; color:var(--text-3);">— reusable building blocks every agent needs.</span></h2>
+  <div class="body">
+    <table>
+      <thead><tr><th>Primitive</th><th>Purpose</th><th>Where</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Trigger types</strong> (cron · webhook · manual)</td><td>Wake the agent up</td><td>Step 1</td></tr>
+        <tr><td><strong>Config-as-files</strong></td><td>Editable behavior, no redeploys</td><td>Step 2</td></tr>
+        <tr><td><strong>Sub-agent decomposition</strong></td><td>Cheaper, narrower context per step</td><td>Steps 3 · 6 · 8</td></tr>
+        <tr><td><strong>Cascade</strong> (Haiku → Sonnet → Opus)</td><td>60-70% bill cut</td><td>Steps 3 &amp; 6</td></tr>
+        <tr><td><strong>Schema-first JSON outputs</strong></td><td>Connections that don't break</td><td>Steps 3 · 5</td></tr>
+        <tr><td><strong>Idempotent dedup</strong></td><td>Re-run safety</td><td>Step 4</td></tr>
+        <tr><td><strong>HITL via Gmail drafts</strong></td><td>Brand voice protection</td><td>Step 7</td></tr>
+        <tr><td><strong>Audit log + cost meter</strong></td><td>Trust through track record</td><td>Step 8</td></tr>
+      </tbody>
+    </table>
+    <p class="kicker">The spine of every agent you'll build for the next 5 years. Tools change. Patterns don't.</p>
+  </div>
+  <div class="footer"><span class="tag">durability</span></div>
+</section>
+
+<!-- 34 — 12 PATTERNS GRID -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Build · 12 transferable patterns · yours to keep</div>
+  <h2>Walked in for one agent. Walking out with 12 Lego pieces.</h2>
+  <div class="body">
+    <div class="pat-grid">
+      <div class="pat"><span class="n">1</span><span class="name">Cron + webhook triggers</span><span class="where">Step 1</span></div>
+      <div class="pat"><span class="n">2</span><span class="name">Config-as-files</span><span class="where">Step 2</span></div>
+      <div class="pat"><span class="n">3</span><span class="name">Cascade model selection</span><span class="where">Steps 3 &amp; 6</span></div>
+      <div class="pat"><span class="n">4</span><span class="name">Web search as agent eyes</span><span class="where">Step 3</span></div>
+      <div class="pat"><span class="n">5</span><span class="name">Targeted enrichment</span><span class="where">Step 5</span></div>
+      <div class="pat"><span class="n">6</span><span class="name">Schema-first JSON</span><span class="where">Steps 3 · 5</span></div>
+      <div class="pat"><span class="n">7</span><span class="name">Idempotent dedup</span><span class="where">Step 4</span></div>
+      <div class="pat"><span class="n">8</span><span class="name">HITL via drafts</span><span class="where">Step 7</span></div>
+      <div class="pat"><span class="n">9</span><span class="name">Sub-agent decomposition</span><span class="where">Steps 3 · 6 · 8</span></div>
+      <div class="pat"><span class="n">10</span><span class="name">Audit log on every action</span><span class="where">Step 8</span></div>
+      <div class="pat"><span class="n">11</span><span class="name">Cost metering per run</span><span class="where">Step 8</span></div>
+      <div class="pat"><span class="n">12</span><span class="name">Follow-up via thread context</span><span class="where">Sub-workflow</span></div>
+    </div>
+    <p class="kicker">Combine them. Recombine them. Tools change. Patterns don't.</p>
+  </div>
+  <div class="footer"><span class="tag">strategy</span></div>
+</section>
+
+<!-- 35 — 7 OTHER AGENTS -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Build · The multiplier · same stack, different agents</div>
+  <h2>7 other agents you can build &lt; 30 minutes each.</h2>
+  <div class="body">
+    <table>
+      <thead><tr><th>Agent</th><th>What it does</th><th>Trigger</th><th>Output</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Inbound Triage</strong></td><td>Form fill → research → draft response</td><td>Webhook</td><td>Gmail draft</td></tr>
+        <tr><td><strong>Competitor Pulse</strong></td><td>Daily diff competitor changelogs</td><td>Cron daily</td><td>Email digest</td></tr>
+        <tr><td><strong>Support Draft</strong></td><td>Ticket → KB → drafted reply</td><td>Webhook</td><td>Helpdesk draft</td></tr>
+        <tr><td><strong>Content Repurposer</strong></td><td>Blog → tweet thread + LinkedIn + newsletter</td><td>Webhook</td><td>Drafts in Drive</td></tr>
+        <tr><td><strong>Call Notes → CRM</strong></td><td>Recording → structured notes → CRM update</td><td>Webhook</td><td>CRM entry</td></tr>
+        <tr><td><strong>Investor Update</strong></td><td>Metrics → narrative → draft email</td><td>Cron monthly</td><td>Gmail draft</td></tr>
+        <tr><td><strong>Onboarding Personalizer</strong></td><td>Signup → enriched welcome series</td><td>Webhook</td><td>Gmail sequence</td></tr>
+      </tbody>
+    </table>
+    <p class="kicker">Same architecture. Different trigger · search/extract · output. Ship a different one every week.</p>
+  </div>
+  <div class="footer"><span class="tag">leverage</span></div>
+</section>
+
+<!-- =====================================================================
+     PART 05 — TOKEN ECONOMICS + OSS
+     ===================================================================== -->
+
+<!-- 36 — DIVIDER · COST -->
+<section class="divider">
+  <div class="part">PART 05 · 6 MIN · TOKEN ECONOMICS + OSS</div>
+  <h2 class="question">Same agent. $135/month or $8/month.<br/>The difference is one weekend.</h2>
+  <div class="sub">Three cost levers stacked. Plus the open-source growth playbook your tools used.</div>
+</section>
+
+<!-- 37 — CASCADE PATTERN -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Cost · Lever 01 · the cascade</div>
+  <h2>Sub-agent decomposition for cost.</h2>
+  <div class="body">
+    <div class="cards-2">
+      <div class="card warn">
+        <h3>Naive pattern</h3>
+        <p>Sonnet for everything.</p>
+        <p style="font-size:54px; font-weight:900; color:var(--warn); line-height:1; margin-top:14px;">$18<span style="font-size:0.36em; color:var(--text-3); font-weight:500;">/month</span></p>
+        <p style="font-size:13px; color:var(--text-3);">at 100K input / 20K output daily</p>
+      </div>
+      <div class="card good">
+        <h3>Cascade pattern</h3>
+        <ul>
+          <li><strong>Haiku</strong> for routing · classify · extract · score · dedup</li>
+          <li><strong>Sonnet</strong> for nuanced drafting</li>
+          <li><strong>Opus</strong> only for hard edge cases</li>
+        </ul>
+        <p style="font-size:54px; font-weight:900; color:var(--good); line-height:1; margin-top:14px;">$6<span style="font-size:0.36em; color:var(--text-3); font-weight:500;">/month</span></p>
+      </div>
+    </div>
+    <p class="kicker" style="text-align:center;"><strong style="color:var(--good);">60–70% reduction.</strong> Same workflow, same output quality. The most underused cost lever in 2026.</p>
+  </div>
+  <div class="footer"><span class="tag">cash</span></div>
+</section>
+
+<!-- 38 — CACHING TIERS -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Cost · Lever 02 · stacking discounts</div>
+  <h2>Anthropic prompt caching · May 2026.</h2>
+  <div class="body">
+    <table>
+      <thead><tr><th>Cache strategy</th><th>Write cost</th><th>Read cost</th><th>When to use</th></tr></thead>
+      <tbody>
+        <tr><td><strong>5-minute cache</strong></td><td class="num" style="color:#D97706;">1.25×</td><td class="num">0.1×</td><td>voice.md + ICP injected each run</td></tr>
+        <tr><td><strong>1-hour cache</strong></td><td class="num" style="color:#D97706;">2×</td><td class="num">0.1×</td><td>Same workflow runs &gt; 1×/hour</td></tr>
+        <tr><td><strong>Batch API</strong></td><td class="num">50% off</td><td>—</td><td>Daily digest · non-urgent steps</td></tr>
+      </tbody>
+    </table>
+    <div class="callout win"><h4>Stack all three</h4><p>Cascade <strong>60% off</strong> &nbsp;+&nbsp; Caching <strong>30% off the rest</strong> &nbsp;+&nbsp; Batch <strong>50% off non-urgent</strong> &nbsp;=&nbsp; <strong style="color:var(--good);">~75% off the naive bill.</strong></p></div>
+  </div>
+  <div class="footer"><span class="tag">cash</span><span class="cite">platform.claude.com/docs/pricing · May 2026</span></div>
+</section>
+
+<!-- 39 — 5-TIER COST MATRIX -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Cost · Roadmap · from FREE to fully paid</div>
+  <h2>Same workflow · five cost tiers.</h2>
+  <div class="body">
+    <div class="cost-bars">
+      <div class="cost-bar t4">
+        <div class="name"><strong style="color:var(--good);">Tier 0 · FREE · zero install</strong><span class="small">n8n.cloud trial · Groq Llama 3.3 · Jina Reader · 14 days · no card</span></div>
+        <div class="bar"><div class="fill" style="width:1%; background:var(--good);">$0</div></div>
+        <div class="price" style="color:var(--good);">$0/mo</div>
+      </div>
+      <div class="cost-bar t1">
+        <div class="name">Tier 1 · All-cloud SaaS<span class="small">n8n.cloud + Perplexity + Firecrawl + Sonnet API</span></div>
+        <div class="bar"><div class="fill">~$135</div></div>
+        <div class="price">$135/mo</div>
+      </div>
+      <div class="cost-bar t2">
+        <div class="name">Tier 2 · Hybrid<span class="small">n8n self + Perplexity + Firecrawl Cloud + Sonnet</span></div>
+        <div class="bar"><div class="fill">~$95</div></div>
+        <div class="price">$95/mo</div>
+      </div>
+      <div class="cost-bar t3">
+        <div class="name">Tier 3 · Lean self-hosted<span class="small">n8n + SearXNG + Firecrawl all self · Sonnet API</span></div>
+        <div class="bar"><div class="fill">~$15</div></div>
+        <div class="price">$15/mo</div>
+      </div>
+      <div class="cost-bar t4">
+        <div class="name">Tier 4 · Maximum DIY<span class="small">+ Qwen 3.6-27B local · Ollama install required</span></div>
+        <div class="bar"><div class="fill">~$8</div></div>
+        <div class="price">$8/mo</div>
+      </div>
+    </div>
+    <p class="kicker" style="text-align:center;"><strong style="color:var(--good);">Try Tier 0 free this week.</strong> No credit card. No install. Move to Tier 1 or 3 when you outgrow the trial.</p>
+  </div>
+  <div class="footer"><span class="tag">cash</span></div>
+</section>
+
+<!-- 40 — LOCAL HARDWARE -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Cost · Lever 03 · the local inflection</div>
+  <h2>2026 changed the local hardware math.</h2>
+  <div class="body">
+    <table>
+      <thead><tr><th>Build</th><th>Price</th><th>Runs</th><th>Throughput</th></tr></thead>
+      <tbody>
+        <tr><td><strong>AMD Strix Halo</strong> (Framework Desktop)</td><td class="num">$1,499 — $2,500</td><td>Llama 3 70B Q4</td><td>14–18 t/s</td></tr>
+        <tr><td>Mac Studio M3 Ultra 96GB</td><td class="num">$3,999</td><td>Qwen 3.6-27B</td><td>17–18 t/s</td></tr>
+        <tr><td>RTX 5090 32GB</td><td class="num">~$3,600</td><td>Qwen 3.6-27B Q4 · Gemma 4 31B</td><td>5,200 t/s prefill</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><h4>Crossover math</h4><p>Break-even vs API at <strong>~2–3M tokens/day</strong> · ~12-month payback. Then <strong style="color:var(--good);">40–200× cheaper</strong> ongoing. Stack: <strong>llama.cpp</strong> (HIP / Vulkan / Metal) + <strong>Ollama</strong> or <strong>vLLM</strong>.</p></div>
+    <p class="kicker">Revisit local when API bill &gt; $200/mo · PII workloads · predictable throughput.</p>
+  </div>
+  <div class="footer"><span class="tag">cash</span><span class="tag">safety</span><span class="cite">AMD developer blog · vendor pricing · May 2026</span></div>
+</section>
+
+<!-- 41 — OSS PLAYBOOK -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>OSS · The growth playbook</div>
+  <h2>The pattern every AI tool we used followed.</h2>
+  <div class="body">
+    <div class="diagram" style="font-size:15px;">
+<span class="lbl">1</span>  Ship something genuinely useful.
+<span class="lbl">2</span>  License it permissively.  <span class="mu">(Apache 2.0 · MIT)</span>
+<span class="lbl">3</span>  Build distribution + community trust.
+<span class="lbl">4</span>  Monetize the slice nobody wants to self-host.
+   <span class="mu">(managed cloud · enterprise SSO · premium support · datasets · training)</span>
+    </div>
+    <div class="callout win"><h4>This is also the playbook for YOUR startup</h4><p>Your customer-discovery agent might be the OSS tool that gets your startup distribution. Your prompt library could be the lead magnet. Your n8n template could be the funnel.</p></div>
+  </div>
+  <div class="footer"><span class="tag">strategy</span></div>
+</section>
+
+<!-- 42 — OSS COMPANY CASE STUDIES -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>OSS · 10 founders who used this exact playbook</div>
+  <h2>OSS companies that grew this way.</h2>
+  <div class="body">
+    <table style="font-size:14px;">
+      <thead><tr><th>Company</th><th>OSS'd</th><th>Monetization</th><th>Outcome</th></tr></thead>
+      <tbody>
+        <tr><td><strong>n8n</strong></td><td>Workflow engine · the runtime in our demo</td><td>Cloud + enterprise</td><td>1M+ users · $60M Series B</td></tr>
+        <tr><td><strong>Firecrawl</strong></td><td>Web extraction · in our demo</td><td>Hosted Cloud · $83/mo</td><td>YC · ~35K stars</td></tr>
+        <tr><td><strong>Chroma</strong></td><td>Vector DB</td><td>Chroma Cloud</td><td>$20M+ raised</td></tr>
+        <tr><td><strong>Temporal</strong></td><td>Durable workflow engine</td><td>Cloud + enterprise</td><td>$120M Series C · powers Datadog</td></tr>
+        <tr><td><strong>Neo4j</strong></td><td>Graph database · the AI memory layer</td><td>AuraDB + enterprise</td><td>Standard for knowledge graphs</td></tr>
+        <tr><td><strong>Hugging Face</strong></td><td>Transformers + model hub</td><td>Inference Endpoints + enterprise</td><td>$4.5B valuation</td></tr>
+        <tr><td><strong>Mistral</strong></td><td>Frontier model weights</td><td>API + enterprise</td><td>$6B valuation</td></tr>
+        <tr><td><strong>Ollama</strong></td><td>Local LLM runtime</td><td>None yet · pure distribution</td><td>Default for local AI</td></tr>
+        <tr><td><strong>Browser Use</strong></td><td>Browser-agent library</td><td>TBD · still early</td><td>81K stars in &lt; 12 months</td></tr>
+        <tr><td><strong>OpenClaw</strong></td><td>File-based agent runtime</td><td>TBD · sponsorship phase</td><td>355K stars · passed React Mar 3 2026</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="footer"><span class="tag">strategy</span><span class="cite">Vendor blogs · GitHub stars · public funding · May 2026</span></div>
+</section>
+
+<!-- 43 — LESSON FOR YOUR STARTUP -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>OSS · The lesson for your startup</div>
+  <h2>You don't need to ship a $4.5B company.</h2>
+  <div class="body">
+    <p class="lead">You need <em>one useful free thing</em> that gets shared in your audience's group chats.</p>
+    <div class="lesson-options">
+      <div class="opt"><h4>Option A</h4><p>Your <strong>n8n template</strong> · publish on GitHub MIT</p></div>
+      <div class="opt"><h4>Option B</h4><p>Your <strong>prompt library</strong> · newsletter lead magnet</p></div>
+      <div class="opt"><h4>Option C</h4><p>Your <strong>OSS Discovery Engine fork</strong> · distribution flywheel</p></div>
+    </div>
+    <p class="kicker" style="text-align:center;">Distribution &gt; differentiation, in 2026. Open source IS your distribution.</p>
+  </div>
+  <div class="footer"><span class="tag">strategy</span></div>
+</section>
+
+<!-- =====================================================================
+     PART 06 — HITL + PRODUCTIONIZATION
+     ===================================================================== -->
+
+<!-- 44 — DIVIDER · HITL -->
+<section class="divider">
+  <div class="part">PART 06 · 3 MIN · HITL + PRODUCTIONIZATION</div>
+  <h2 class="question">Maintain brand voice and ethical oversight<br/>while scaling output 10×.</h2>
+  <div class="sub">Direct from the workshop description. We covered HITL in the build · now what comes after, and how to graduate.</div>
+</section>
+
+<!-- 45 — TRUST LADDER + GUARDRAILS -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>HITL · From human-in-the-loop today to full auto tomorrow</div>
+  <h2>The 4-stage trust ladder.</h2>
+  <div class="body">
+    <table class="stage-table">
+      <thead>
+        <tr><th style="width:11%;">Stage</th><th style="width:22%;">What the agent does</th><th style="width:20%;">What you do</th><th style="width:25%;">Guardrails to add</th><th>Promote when</th></tr>
+      </thead>
+      <tbody>
+        <tr class="s1"><td><strong>1 · Shadow</strong></td><td>Runs alongside · no external action</td><td>Compare agent output to your own work</td><td>Schema validation · cost ceiling per run</td><td class="muted">≥ 90% agreement over 50+ runs</td></tr>
+        <tr class="s2"><td><strong>2 · Pending Review</strong> <span style="color:var(--warn); font-size:10px;">(today)</span></td><td>Drafts only · never sends</td><td>Approve / edit / reject each output</td><td>+ voice-distance check · audit log · do-not-contact filter</td><td class="muted">≥ 95% approval over 2 weeks</td></tr>
+        <tr class="s3"><td><strong>3 · Conditional Auto</strong></td><td>Auto-fires high-confidence (score ≥ 8 + voice match ≥ 0.85)</td><td>Review low-confidence + 10% sample audit</td><td>+ rate limit per recipient · anomaly detection · sandbox isolation</td><td class="muted">Auto-error rate &lt; 1% sustained 30+ days</td></tr>
+        <tr class="s4"><td><strong>4 · Full Auto</strong></td><td>Fires all · alerts on exceptions</td><td>Weekly audit log review</td><td>+ A/B replay testing · drift detection · automatic rollback</td><td class="muted">Trusted like a senior teammate</td></tr>
+      </tbody>
+    </table>
+    <p class="kicker"><strong>Discovery Engine ships at Stage 2.</strong> Each row adds the guardrails of the row before. Graduate one stage at a time.</p>
+  </div>
+  <div class="footer"><span class="tag">safety</span><span class="tag">durability</span></div>
+</section>
+
+<!-- 46 — BAIN SHADOW CASE -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>HITL · Real proof · Bain HR Services payroll agent · April 2026</div>
+  <h2>From 70% to 98% accuracy through shadow testing.</h2>
+  <div class="body">
+    <div class="cards-2">
+      <div class="card accent">
+        <h3>Context</h3>
+        <ul>
+          <li>8 LangGraph subgraphs · 1M+ emails/year</li>
+          <li>Customer-facing autonomous</li>
+          <li>3K+ live shadow emails</li>
+        </ul>
+        <h3 style="margin-top:14px;">Numbers</h3>
+        <ul>
+          <li>Started: <strong style="color:var(--warn);">70% real-world accuracy</strong></li>
+          <li>After 6 mo shadow: <strong style="color:var(--good);">98%</strong></li>
+          <li><strong>80%</strong> of engineering = scaffolding</li>
+        </ul>
+      </div>
+      <div class="card good">
+        <h3>The lesson</h3>
+        <p style="font-size:16px; font-style:italic;">"The secret to successful agents in Enterprise is not the agents — it's the scaffolding around the agents."</p>
+        <p style="font-size:13px; color:var(--text-3); margin-top:8px;">— Sanjin Bicanic, Bain &amp; Co · Apr 29, 2026</p>
+        <p style="font-size:15px; margin-top:12px;">Same lesson at startup scale: <strong>the agent is 20%.</strong> Your dedup, HITL gate, voice.md, audit log — that's the 80%.</p>
+      </div>
+    </div>
+  </div>
+  <div class="footer"><span class="tag">safety</span><span class="cite">AI Dev 26 SF · Autonomous AI Agent in the Wild</span></div>
+</section>
+
+<!-- 47 — POCKETOS -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>HITL · Cautionary tale · 9 days before this workshop</div>
+  <h2>What skipping stages costs.</h2>
+  <div class="body">
+    <div class="callout warn"><p><strong>April 25, 2026.</strong> PocketOS founder Jer Crane lost his entire production database in <strong style="color:var(--warn);">9 seconds</strong>. A Cursor agent on Opus 4.6 found a Railway API token in an unrelated file and used it to delete the volume. 30-hour outage. Agent's confession: <em>"I violated every principle I was given."</em></p></div>
+    <div class="cards-2">
+      <div class="card warn">
+        <h3>What this was</h3>
+        <p>Stage 4 access on a Stage 1 track record. Blanket Railway token. No sandbox. No audit log. No human in the loop on a destructive operation.</p>
+      </div>
+      <div class="card good">
+        <h3>What your agent needs</h3>
+        <ul>
+          <li>Scoped tokens · not blanket access</li>
+          <li>Planning-only mode for destructive ops</li>
+          <li>Sandbox · Docker <code>sbx run claude</code> (Mar 2026)</li>
+          <li>Audit log on every hop</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer"><span class="tag">safety</span><span class="cite">The Register · Apr 27, 2026</span></div>
+</section>
+
+<!-- =====================================================================
+     CLOSE
+     ===================================================================== -->
+
+<!-- 48 — RECAP -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Close · What you walked out with</div>
+  <h2>One workshop · seven artifacts.</h2>
+  <div class="body">
+    <div class="recap-grid">
+      <div class="recap-item"><div class="icon">◆</div><div><h3>The 20/80 Blueprint</h3><p>Framework for what to automate next</p></div></div>
+      <div class="recap-item"><div class="icon">◆</div><div><h3>The Founder's Discovery Engine</h3><p>Working agent · open-sourced</p></div></div>
+      <div class="recap-item"><div class="icon">◆</div><div><h3>12 transferable patterns</h3><p>Lego pieces for any agent</p></div></div>
+      <div class="recap-item"><div class="icon">◆</div><div><h3>7 other agents on the same stack</h3><p>Ship one a week</p></div></div>
+      <div class="recap-item"><div class="icon">◆</div><div><h3>The 4-stage trust ladder</h3><p>Scale 10× without losing voice</p></div></div>
+      <div class="recap-item"><div class="icon">◆</div><div><h3>$135 → $8 cost roadmap</h3><p>Cloud now · OSS self-host later</p></div></div>
+      <div class="recap-item" style="grid-column:1/-1;"><div class="icon">◆</div><div><h3>The OSS growth playbook</h3><p>The same path your tools used · yours to use too</p></div></div>
+    </div>
+  </div>
+  <div class="footer"><span class="tag">ROI</span></div>
+</section>
+
+<!-- 49 — CTAs -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Close · two ways to keep going · both free</div>
+  <h2>Take this further.</h2>
+  <div class="body">
+    <div class="cta-grid">
+      <div class="cta-box">
+        <h3>1 · Architect's Office Hours</h3>
+        <p class="lead">5 free 30-min audits for BSW attendees.</p>
+        <p>You bring your bottleneck. I'll tell you what to automate, what to leave alone, and which 3 tools to use.</p>
+        <div class="qr"><img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=0&data=https%3A%2F%2Fcal.com%2Fsudosoph%2Farchitect-audit-bsw" alt="QR · Office Hours Cal link"/></div>
+        <div class="qr-label">cal.com/sudosoph/architect-audit-bsw</div>
+      </div>
+      <div class="cta-box">
+        <h3>2 · Agentic Architect Blog</h3>
+        <p class="lead">agenticarchitect.ai/blog</p>
+        <p>Weekly deep-dives on agentic architecture for lean founders. n8n templates · cost teardowns · what's actually working in 2026.</p>
+        <div class="qr"><img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=0&data=https%3A%2F%2Fagenticarchitect.ai%2Fblog" alt="QR · agenticarchitect.ai/blog"/></div>
+        <div class="qr-label">agenticarchitect.ai/blog</div>
+      </div>
+    </div>
+    <p class="kicker" style="text-align:center;">Repo: <code>github.com/sudosoph/bsw-growth-agent</code> &nbsp;·&nbsp; MIT · fork · ship yours</p>
+  </div>
+  <div class="footer"><span class="tag">pipeline</span></div>
+</section>
+
+<!-- 50 — CLOSE -->
+<section class="end">
+  <h1>Bring an <em>agent</em> next month.</h1>
+  <p style="font-size:18px; color:var(--text-3); max-width:64%;">Boulder is the lean-founder agentic capital, and you're already here.</p>
+  <p style="margin-top:24px; font-size:13px; color:var(--text-3);">Boulder AI Builders &nbsp;·&nbsp; Boulder Startup Week &nbsp;·&nbsp; Silicon Flatirons (CU Boulder)</p>
+  <div class="signoff">
+    Thanks for the hour.<br/>
+    <strong>Sophia Stein</strong> · AI Architect<br/>
+    Local LLM &amp; Agentic Workflows<br/>
+    <span style="color:var(--accent);">agenticarchitect.ai/blog</span><br/>
+    <span style="color:var(--text-3); font-size:13px;">sophia@agenticarchitect.ai</span>
+  </div>
+</section>
+
+</div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+<script>
+Reveal.initialize({
+  hash: true,
+  slideNumber: 'c/t',
+  controls: true,
+  controlsTutorial: false,
+  progress: true,
+  center: false,
+  disableLayout: false,
+  transition: 'fade',
+  transitionSpeed: 'fast',
+  backgroundTransition: 'none',
+  width: 1280,
+  height: 720,
+  margin: 0,
+  minScale: 0.2,
+  maxScale: 1.5,
+  plugins: [RevealHighlight, RevealNotes]
+});
+</script>
+</body>
+</html>
