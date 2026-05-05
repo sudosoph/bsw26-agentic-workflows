@@ -33,12 +33,27 @@ You can run this whole agent for **free** for 14 days, then either upgrade or mi
 **What you need:**
 - [n8n.cloud](https://n8n.cloud) free 14-day trial (no card)
 - [Groq](https://console.groq.com) free tier · Llama 3.3 70B (no card)
-- [Jina Reader](https://r.jina.ai) for web extraction (no signup needed at all — just hit `https://r.jina.ai/<URL>`)
+- [Jina Reader](https://r.jina.ai) for web extraction (no signup needed — just hit `https://r.jina.ai/<URL>`)
 - Your existing Google account (Sheets + Drive + Gmail)
 
 **Total cost:** $0 for the first 14 days. After the n8n.cloud trial: pay $24/mo, OR self-host n8n on a $5/mo Hetzner VPS, OR migrate to Make.com's free tier (1,000 ops/month).
 
-See **[CONFIGURATION.md → Recipe 1](./CONFIGURATION.md#recipe-1--zero-cost-demo-groq--jina)** for the exact swap-in steps. The Lite workflow lives at `n8n/bsw-growth-agent-lite.json` (coming · use the swap-ins from CONFIGURATION.md for now).
+**One-click free-tier workflow:** import [`n8n/bsw-growth-agent-lite.json`](./n8n/bsw-growth-agent-lite.json) directly into n8n.cloud · all Anthropic + Firecrawl nodes are pre-swapped to Groq + Jina. Same architecture, $0 stack.
+
+### ⚡ Autopilot setup with a browser agent (~10 min hands-off)
+
+If you have **Claude for Chrome** (Max/Pro subscribers · [claude.com/chrome](https://claude.com/chrome)) or **Gemini in Chrome** or **OpenAI Operator**, an AI browser agent can do the entire signup-and-key-copy phase for you while you make coffee. Paste prompt in [TUTORIAL.md → Autopilot section](./TUTORIAL.md#-autopilot--let-an-ai-browser-agent-do-the-setup-for-you-10-min-hands-off).
+
+### 🧪 Verify your keys before wiring (60-second smoke test)
+
+```bash
+ANTHROPIC_API_KEY=sk-ant-... \
+FIRECRAWL_API_KEY=fc-...    \
+GROQ_API_KEY=gsk_...        \
+./scripts/test-credentials.sh
+```
+
+Catches typos and auth issues before you waste time wiring n8n.
 
 ### 💎 Paid path · best quality · Tier 1
 

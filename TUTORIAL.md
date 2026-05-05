@@ -40,6 +40,34 @@ Before you start, you need 5 accounts. Free tiers cover everything.
 
 ---
 
+## ⚡ Autopilot · let an AI browser agent do the setup for you (~10 min hands-off)
+
+If you have **Claude for Chrome** (Max/Pro subscribers · [claude.com/chrome](https://claude.com/chrome)) or **Gemini in Chrome** (built into Chrome 127+) or **OpenAI Operator**, the entire setup phase can run autonomously while you make coffee.
+
+**Paste this into the agent:**
+
+> *"Set up the BSW Growth Agent demo. Walk through these tasks in order. Pause for me only when you need me to enter a password, accept an OAuth consent screen, or confirm payment.*
+>
+> *1. Sign me in to console.anthropic.com · create a new API key called `bsw-growth-agent` · copy it to my clipboard · note: I'll add billing manually later.*
+>
+> *2. Sign me in to firecrawl.dev · go to Dashboard → API Keys · copy the free-tier key · I shouldn't need a credit card for the trial.*
+>
+> *3. Sign me in to console.groq.com · create an API key for the free tier called `bsw-growth-agent` · copy it.*
+>
+> *4. Open n8n.cloud · sign in or start the 14-day trial · create a new workflow called `BSW Growth Agent` · then go to Workflows → Add → Import from File · I'll provide the JSON path.*
+>
+> *5. Open Google Sheets · create a new sheet called `Discovery Engine` with three tabs named ICP, Sent, and Runs · paste the headers from `handouts/google-sheet-seed.csv` from the BSW repo into each tab.*
+>
+> *6. Open Google Drive · create a folder called `agentic-architect` · inside it, create a Google Doc named `voice.md` and paste the contents of `handouts/voice-md-template.md` from the BSW repo (which I'll customize after).*
+>
+> *7. When done, give me back: the Anthropic key, the Firecrawl key, the Groq key, the Sheet ID (from the URL), and the voice.md file ID. I'll wire these into n8n manually."*
+
+The agent handles signups + form fills + key copy. **You only intervene at OAuth consent screens and payment forms** — typically 2 minutes of your real time across the whole 10-minute autopilot run.
+
+**Cannot autopilot via Claude Code CLI / shell-only AI.** Browser interaction needs a browser-controlling agent. If you don't have one, follow the manual steps below — they take ~30 minutes.
+
+---
+
 ## Setup (5 min · do this before the build)
 
 ### 1. Get API keys

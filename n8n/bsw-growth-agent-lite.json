@@ -1,0 +1,718 @@
+{
+  "name": "BSW Growth Agent \u00b7 Lite (Free Tier)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 7 * * *"
+            }
+          ]
+        }
+      },
+      "id": "trigger-cron",
+      "name": "Cron \u00b7 Daily 7am",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        200
+      ],
+      "notes": "Wakes the agent up daily at 7am. Adjust cron expression to your timezone preference."
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "discovery-engine-manual",
+        "responseMode": "lastNode"
+      },
+      "id": "trigger-manual",
+      "name": "Manual \u00b7 Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        360
+      ],
+      "notes": "Manual trigger for testing and live demos. Hit the webhook URL to fire the agent on demand."
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "REPLACE_WITH_YOUR_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "ICP",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "id": "read-icp",
+      "name": "Read ICP from Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        460,
+        280
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_GOOGLE_SHEETS_CRED",
+          "name": "Google Sheets account"
+        }
+      },
+      "notes": "Reads the ICP tab \u2014 your customer profile, signal keywords, buying triggers. Config-as-files pattern."
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "REPLACE_WITH_VOICE_MD_FILE_ID",
+          "mode": "id"
+        },
+        "options": {
+          "binaryPropertyName": "voiceMd"
+        }
+      },
+      "id": "read-voice",
+      "name": "Read voice.md from Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        460,
+        460
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "REPLACE_GOOGLE_DRIVE_CRED",
+          "name": "Google Drive account"
+        }
+      },
+      "notes": "Pulls the voice.md tone-of-voice file. Edit voice.md in Drive and the agent inherits the change next run."
+    },
+    {
+      "parameters": {
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "method": "POST",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"llama-3.3-70b-versatile\",\n  \"max_tokens\": 2000,\n  \"system\": \"You are a customer-discovery research agent for a lean startup.\\n\\nICP context:\\n{{ $('Read ICP from Sheets').item.json.icp_description }}\\n\\nSignal keywords: {{ $('Read ICP from Sheets').item.json.signal_keywords }}\\n\\nReturn ONLY a JSON array. No prose. No explanation.\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"Search Hacker News, Reddit (r/SaaS, r/Entrepreneur, r/ChatGPTCoding, r/LocalLLaMA, r/AI_Agents), and Product Hunt for posts from the last 7 days where founders or operators are publicly displaying signals matching my ICP. Look for: pain mentions, hiring posts I could solve, complaints about competitors, asks for tools.\\n\\nReturn JSON array, max 30 items, schema:\\n[\\n  {\\n    \\\"person\\\": \\\"@handle or display name\\\",\\n    \\\"signal_type\\\": \\\"pain | hiring | complaint | tool_ask\\\",\\n    \\\"source_url\\\": \\\"full URL to the original post\\\",\\n    \\\"evidence_quote\\\": \\\"verbatim 1-2 sentence quote\\\",\\n    \\\"score\\\": 0-10,\\n    \\\"company\\\": \\\"company name if discoverable\\\",\\n    \\\"company_url\\\": \\\"company website if discoverable\\\"\\n  }\\n]\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "discovery-claude",
+      "name": "Discovery \u00b7 Claude Haiku 4.5 + web_search",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        700,
+        360
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "REPLACE_GROQ_HEADER_AUTH",
+          "name": "Groq API \u00b7 Authorization Bearer"
+        }
+      },
+      "notes": "Sub-agent #1 \u2014 Haiku 4.5 with built-in web_search tool. Single call does both search AND structured extraction. Returns typed JSON. \u00b7 LITE: swapped to Groq Llama 3.3 70B (free tier)."
+    },
+    {
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "// Parse Claude's response and extract the leads JSON array.\n// Claude returns content blocks; we want the text block with the JSON array.\n\nconst response = $input.first().json;\nconst contentBlocks = response.content || [];\n\nlet rawText = '';\nfor (const block of contentBlocks) {\n  if (block.type === 'text' && block.text) {\n    rawText += block.text;\n  }\n}\n\n// Strip any leading/trailing non-JSON\nconst jsonMatch = rawText.match(/\\[[\\s\\S]*\\]/);\nif (!jsonMatch) {\n  return [{ json: { error: 'No JSON array in response', raw: rawText, leads: [] } }];\n}\n\nlet leads;\ntry {\n  leads = JSON.parse(jsonMatch[0]);\n} catch (e) {\n  return [{ json: { error: 'JSON parse failed', message: e.message, raw: jsonMatch[0], leads: [] } }];\n}\n\n// Filter to leads scored 6 or higher\nconst qualified = leads.filter(l => (l.score ?? 0) >= 6);\n\nreturn qualified.map(lead => ({ json: lead }));\n"
+      },
+      "id": "parse-leads",
+      "name": "Parse \u00b7 Extract qualified leads",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        920,
+        360
+      ],
+      "notes": "Parses Claude's response, extracts the JSON array, filters to score >= 6."
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "REPLACE_WITH_YOUR_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sent",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "id": "read-sent-log",
+      "name": "Read Sent log",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1140,
+        280
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_GOOGLE_SHEETS_CRED",
+          "name": "Google Sheets account"
+        }
+      },
+      "notes": "Idempotency: read the Sent log so we can dedup against already-contacted people."
+    },
+    {
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "// Idempotent dedup \u2014 drop any lead already in the Sent log.\n// The Sent log is the second input branch; the leads come in as the primary stream.\n\nconst leads = $input.all().map(i => i.json);\nconst sentRows = $('Read Sent log').all().map(i => i.json);\n\n// Build a Set of identifiers we've already contacted.\n// We dedup on source_url AND on person handle, whichever is present.\nconst contactedUrls    = new Set(sentRows.map(r => r.source_url).filter(Boolean));\nconst contactedHandles = new Set(sentRows.map(r => r.person).filter(Boolean));\n\nconst fresh = leads.filter(lead => {\n  if (lead.source_url && contactedUrls.has(lead.source_url)) return false;\n  if (lead.person     && contactedHandles.has(lead.person))    return false;\n  return true;\n});\n\n// Keep top 5 by score \u2014 progressive enrichment gates the expensive step.\nfresh.sort((a, b) => (b.score ?? 0) - (a.score ?? 0));\nconst top5 = fresh.slice(0, 5);\n\nreturn top5.map(lead => ({ json: lead }));\n"
+      },
+      "id": "dedup",
+      "name": "Dedup \u00b7 top 5 fresh leads",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1360,
+        360
+      ],
+      "notes": "Idempotency primitive. Filters out already-contacted leads. Keeps top 5 by score for the expensive enrichment step."
+    },
+    {
+      "parameters": {
+        "url": "=https://r.jina.ai/{{ $json.company_url || $json.source_url }}",
+        "method": "GET",
+        "authentication": "none",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "firecrawl-enrich",
+      "name": "Firecrawl \u00b7 enrich top 5",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1580,
+        360
+      ],
+      "notes": "Progressive enrichment \u2014 only the top 5 leads get a Firecrawl scrape. Apache 2.0 OSS \u2014 self-host or Cloud. \u00b7 LITE: swapped to Jina Reader (no key, no signup, free forever)."
+    },
+    {
+      "parameters": {
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "method": "POST",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"llama-3.3-70b-versatile\",\n  \"max_tokens\": 300,\n  \"system\": \"You write concise 2-line company summaries for a lean startup outreach agent. Output plain text. No JSON. No markdown.\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"Company markdown extract:\\n\\n{{ $json.data.markdown.slice(0, 4000) }}\\n\\nIn exactly two sentences, what does this company do and what's their current state?\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "summarize-company",
+      "name": "Summarize \u00b7 Haiku 4.5",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1800,
+        360
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "REPLACE_GROQ_HEADER_AUTH",
+          "name": "Groq API \u00b7 Authorization Bearer"
+        }
+      },
+      "notes": "Cheap classifier extracts a 2-sentence company context. Cascade pattern \u2014 Haiku for summary, Sonnet for drafting. \u00b7 LITE: swapped to Groq Llama 3.3 70B (free tier)."
+    },
+    {
+      "parameters": {
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "method": "POST",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"llama-3.3-70b-versatile\",\n  \"max_tokens\": 600,\n  \"system\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"You write customer-discovery emails for a lean startup founder. Goal of every email: an INTERVIEW ASK \u2014 not a pitch. Soft CTA. 80-110 words. Follow the voice.md file exactly.\"\n    },\n    {\n      \"type\": \"text\",\n      \"text\": \"=voice.md contents:\\n\\n{{ $('Read voice.md from Drive').item.binary.voiceMd.toString('utf-8') }}\"\n    }\n  ],\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"Draft a customer-discovery email.\\n\\nPerson: {{ $json.person || 'unknown' }}\\nTheir signal: {{ $json.signal_type }} \u2014 {{ $json.evidence_quote }}\\nSource URL: {{ $json.source_url }}\\nCompany context (2 sentences): {{ $('Summarize \u00b7 Haiku 4.5').item.json.content[0].text }}\\n\\nReturn ONLY the email subject and body in this format:\\nSUBJECT: [subject line]\\nBODY:\\n[email body]\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "draft-email",
+      "name": "Draft \u00b7 Sonnet 4.6 + voice.md",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2020,
+        360
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "REPLACE_GROQ_HEADER_AUTH",
+          "name": "Groq API \u00b7 Authorization Bearer"
+        }
+      },
+      "notes": "Sub-agent #2 \u2014 Sonnet 4.6 drafts the personalized email using voice.md as cached context. The only premium-token step in the workflow. \u00b7 LITE: swapped to Groq Llama 3.3 70B (free tier)."
+    },
+    {
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "// Parse the SUBJECT: / BODY: format from the Claude response.\nconst response = $input.first().json;\nconst text = (response.content?.[0]?.text || '').trim();\n\nconst subjectMatch = text.match(/^SUBJECT:\\s*(.+?)\\s*\\n/);\nconst bodyMatch    = text.match(/BODY:\\s*\\n([\\s\\S]+)$/);\n\nconst subject = subjectMatch ? subjectMatch[1].trim() : 're: a quick question';\nconst body    = bodyMatch ? bodyMatch[1].trim() : text;\n\n// Carry forward the lead context for downstream nodes.\nconst lead = {\n  person:         $('Dedup \u00b7 top 5 fresh leads').item.json.person,\n  signal_type:    $('Dedup \u00b7 top 5 fresh leads').item.json.signal_type,\n  source_url:     $('Dedup \u00b7 top 5 fresh leads').item.json.source_url,\n  evidence_quote: $('Dedup \u00b7 top 5 fresh leads').item.json.evidence_quote,\n  score:          $('Dedup \u00b7 top 5 fresh leads').item.json.score,\n  company:        $('Dedup \u00b7 top 5 fresh leads').item.json.company,\n  company_url:    $('Dedup \u00b7 top 5 fresh leads').item.json.company_url\n};\n\nreturn [{ json: { subject, body, lead } }];\n"
+      },
+      "id": "parse-draft",
+      "name": "Parse \u00b7 Subject + Body",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2240,
+        360
+      ],
+      "notes": "Splits the Claude SUBJECT/BODY response into structured fields for the Gmail node."
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "operation": "create",
+        "subject": "={{ $json.subject }}",
+        "message": "={{ $json.body }}",
+        "options": {
+          "sendTo": "={{ $json.lead.person ? $json.lead.person + '@unknown.example' : 'TODO_RESOLVE_EMAIL@example.com' }}"
+        }
+      },
+      "id": "gmail-create-draft",
+      "name": "Gmail \u00b7 createDraft (HITL gate)",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2460,
+        360
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_GMAIL_CRED",
+          "name": "Gmail account"
+        }
+      },
+      "notes": "HITL GATE \u2014 the agent NEVER sends. Drops a draft in your Drafts folder. You approve and send manually. NOTE: real-world usage requires resolving the recipient's actual email. For demo we use placeholder @unknown.example."
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "REPLACE_WITH_YOUR_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sent",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "date": "={{ new Date().toISOString().slice(0,10) }}",
+            "person": "={{ $json.lead.person }}",
+            "signal_type": "={{ $json.lead.signal_type }}",
+            "source_url": "={{ $json.lead.source_url }}",
+            "score": "={{ $json.lead.score }}",
+            "draft_subject": "={{ $json.subject }}",
+            "status": "pending_review"
+          }
+        }
+      },
+      "id": "log-sent",
+      "name": "Append \u00b7 Sent log",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2680,
+        360
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_GOOGLE_SHEETS_CRED",
+          "name": "Google Sheets account"
+        }
+      },
+      "notes": "Logs the draft to the Sent sheet with status=pending_review. Founder updates to 'sent' after approving and sending the Gmail draft."
+    },
+    {
+      "parameters": {
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "method": "POST",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"llama-3.3-70b-versatile\",\n  \"max_tokens\": 400,\n  \"system\": \"You write a brief daily digest email for a founder running a customer-discovery agent. One paragraph. Friendly. Specific numbers.\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"=Today the agent processed {{ $('Discovery \u00b7 Claude Haiku 4.5 + web_search').all().length }} discovery results, scored {{ $('Parse \u00b7 Extract qualified leads').all().length }} as qualified, deduped to {{ $('Dedup \u00b7 top 5 fresh leads').all().length }} fresh leads, and drafted {{ $('Parse \u00b7 Subject + Body').all().length }} emails sitting in Gmail Drafts.\\n\\nTop signal types today: {{ $('Dedup \u00b7 top 5 fresh leads').all().map(i => i.json.signal_type).join(', ') }}\\n\\nWrite a short morning digest email to the founder. Subject + body. Friendly tone. Tell them what to do next (approve drafts before 5pm).\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "draft-digest",
+      "name": "Digest \u00b7 Sonnet 4.6",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2900,
+        200
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "REPLACE_GROQ_HEADER_AUTH",
+          "name": "Groq API \u00b7 Authorization Bearer"
+        }
+      },
+      "notes": "Sub-agent #3 \u2014 generates the morning digest summary. Could be moved to Anthropic batch API for 50% off since it's not real-time. \u00b7 LITE: swapped to Groq Llama 3.3 70B (free tier)."
+    },
+    {
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const response = $input.first().json;\nconst text = (response.content?.[0]?.text || '').trim();\n\nconst subjectMatch = text.match(/^SUBJECT:\\s*(.+?)\\s*\\n/i) || text.match(/^Subject:\\s*(.+?)\\s*\\n/);\nconst bodyMatch    = text.match(/(?:BODY:|Body:)\\s*\\n([\\s\\S]+)$/i);\n\nconst subject = subjectMatch ? subjectMatch[1].trim() : 'Discovery Pulse \u2014 ' + new Date().toISOString().slice(0,10);\nconst body    = bodyMatch ? bodyMatch[1].trim() : text;\n\nreturn [{ json: { subject, body } }];\n"
+      },
+      "id": "parse-digest",
+      "name": "Parse \u00b7 Digest fields",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3120,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "subject": "={{ $json.subject }}",
+        "message": "={{ $json.body }}",
+        "options": {
+          "sendTo": "REPLACE_WITH_YOUR_EMAIL@example.com"
+        }
+      },
+      "id": "gmail-send-digest",
+      "name": "Gmail \u00b7 Send digest to founder",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        3340,
+        200
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_GMAIL_CRED",
+          "name": "Gmail account"
+        }
+      },
+      "notes": "Sends the digest email to YOU. The only place the agent actually sends \u2014 and it's only sending to you, not to prospects."
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "REPLACE_WITH_YOUR_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Runs",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "date": "={{ new Date().toISOString().slice(0,10) }}",
+            "leads_found": "={{ $('Discovery \u00b7 Claude Haiku 4.5 + web_search').all().length }}",
+            "qualified": "={{ $('Parse \u00b7 Extract qualified leads').all().length }}",
+            "drafts": "={{ $('Parse \u00b7 Subject + Body').all().length }}",
+            "errors": "0",
+            "notes": "auto"
+          }
+        }
+      },
+      "id": "log-run",
+      "name": "Append \u00b7 Runs audit log",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        3560,
+        200
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_GOOGLE_SHEETS_CRED",
+          "name": "Google Sheets account"
+        }
+      },
+      "notes": "Audit log \u2014 every run appends a row. This is your trust-building primitive. After 2 weeks of clean runs, promote the agent up the trust ladder."
+    }
+  ],
+  "connections": {
+    "Cron \u00b7 Daily 7am": {
+      "main": [
+        [
+          {
+            "node": "Read ICP from Sheets",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Read voice.md from Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual \u00b7 Webhook": {
+      "main": [
+        [
+          {
+            "node": "Read ICP from Sheets",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Read voice.md from Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read ICP from Sheets": {
+      "main": [
+        [
+          {
+            "node": "Discovery \u00b7 Claude Haiku 4.5 + web_search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read voice.md from Drive": {
+      "main": [
+        [
+          {
+            "node": "Discovery \u00b7 Claude Haiku 4.5 + web_search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Discovery \u00b7 Claude Haiku 4.5 + web_search": {
+      "main": [
+        [
+          {
+            "node": "Parse \u00b7 Extract qualified leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse \u00b7 Extract qualified leads": {
+      "main": [
+        [
+          {
+            "node": "Read Sent log",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Dedup \u00b7 top 5 fresh leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Sent log": {
+      "main": [
+        [
+          {
+            "node": "Dedup \u00b7 top 5 fresh leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dedup \u00b7 top 5 fresh leads": {
+      "main": [
+        [
+          {
+            "node": "Firecrawl \u00b7 enrich top 5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Firecrawl \u00b7 enrich top 5": {
+      "main": [
+        [
+          {
+            "node": "Summarize \u00b7 Haiku 4.5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize \u00b7 Haiku 4.5": {
+      "main": [
+        [
+          {
+            "node": "Draft \u00b7 Sonnet 4.6 + voice.md",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Draft \u00b7 Sonnet 4.6 + voice.md": {
+      "main": [
+        [
+          {
+            "node": "Parse \u00b7 Subject + Body",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse \u00b7 Subject + Body": {
+      "main": [
+        [
+          {
+            "node": "Gmail \u00b7 createDraft (HITL gate)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Append \u00b7 Sent log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail \u00b7 createDraft (HITL gate)": {
+      "main": [
+        [
+          {
+            "node": "Digest \u00b7 Sonnet 4.6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Digest \u00b7 Sonnet 4.6": {
+      "main": [
+        [
+          {
+            "node": "Parse \u00b7 Digest fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse \u00b7 Digest fields": {
+      "main": [
+        [
+          {
+            "node": "Gmail \u00b7 Send digest to founder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail \u00b7 Send digest to founder": {
+      "main": [
+        [
+          {
+            "node": "Append \u00b7 Runs audit log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": ""
+  },
+  "versionId": "bsw-growth-agent-lite-v1.0.0",
+  "id": "bsw-growth-agent-lite",
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "description": "FREE-TIER version of the BSW Growth Agent. Uses Groq's free Llama 3.3 70B for reasoning, Jina Reader (no key) for web extraction. Total cost: $0 within Groq's free rate limits and n8n.cloud's 14-day trial. Quality is slightly lower than Sonnet 4.6 voice match but acceptable for evaluation. For production, upgrade to bsw-growth-agent.json (Anthropic + Firecrawl). Repo: github.com/sudosoph/bsw-growth-agent \u00b7 MIT licensed."
+  },
+  "tags": [
+    {
+      "name": "agentic-workflow"
+    },
+    {
+      "name": "customer-discovery"
+    },
+    {
+      "name": "bsw-2026"
+    },
+    {
+      "name": "open-source"
+    },
+    {
+      "name": "free-tier"
+    },
+    {
+      "name": "groq-llama"
+    },
+    {
+      "name": "jina-reader"
+    }
+  ]
+}
