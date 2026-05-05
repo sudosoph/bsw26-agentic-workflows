@@ -95,7 +95,7 @@ The Discovery Engine you got from this workshop is option C, ready-made. Fork it
 - **The repo:** github.com/sudosoph/bsw-growth-agent (MIT licensed)
 - **The blog:** agenticarchitect.ai/blog (weekly deep-dives)
 - **Architecture audits:** 5 free for BSW attendees · QR on closing slide
-- **Boulder community:** AI Tinkerers Denver · Boulder AI Builders · Rocky Mountain AI Interest Group · Silicon Flatirons (CU Boulder)
+- **Boulder community:** Boulder AI Builders Meetup · Rocky Mountain AI Interest Group (RMAIIG) · Silicon Flatirons (CU Boulder)
 
 ---
 

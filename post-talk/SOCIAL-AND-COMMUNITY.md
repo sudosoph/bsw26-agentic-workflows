@@ -53,53 +53,9 @@ agenticarchitect.ai/blog
 
 ---
 
-## LinkedIn · long-form post · Thursday afternoon
-
-```
-yesterday i gave a workshop at boulder startup week called
-"architecting agentic workflows for the lean 2026 startup."
-
-60 minutes. 200+ founders. one live build.
-
-we built a customer-discovery agent that runs while you sleep:
-
-· listens to hn, reddit, product hunt, x for icp signals
-· drafts personalized outreach in YOUR voice (using a voice.md file)
-· drops drafts in gmail · never sends without you
-· costs $8-15/month at the lean tier · or $0 on groq + jina free tier
-· takes 25 minutes to build live · 45 if you're new to n8n
-
-the whole thing is open source: github.com/sudosoph/bsw-growth-agent
-
-what was in the room:
-· pre-pmf solo founders trying to figure out where to start
-· just-past-pmf small teams trying to cut their tooling bill
-· technical founders who've already built one agent and want to ship five more
-· a few non-technical founders who just wanted to know if this was real
-
-it's real.
-
-12 transferable patterns. 7 other agents on the same stack. the 4-stage
-trust ladder for graduating from human-in-the-loop today to full auto
-tomorrow with the right guardrails.
-
-if you're an early-stage founder still doing outbound by hand:
-fork the repo. it's mit licensed. ship yours.
-
-if you want to talk through what to automate first, i'm running 5 free
-30-min audits for bsw attendees this month: cal.com/sudosoph/architect-audit-bsw
-
-if you want the patterns weekly without booking time:
-agenticarchitect.ai/blog
-
-— sophia
-```
-
----
-
 ## Boulder community shares
 
-### Boulder AI Builders · Slack post (post-talk)
+### Boulder AI Builders Meetup · post-talk note
 ```
 hey all · for anyone who couldn't make it to my bsw workshop today,
 the full materials are open-source: github.com/sudosoph/bsw-growth-agent
@@ -113,35 +69,43 @@ the full materials are open-source: github.com/sudosoph/bsw-growth-agent
 mit licensed. fork freely.
 
 drop questions here or dm. happy to walk anyone through their first
-build over coffee.
+build over coffee at the next meetup.
 
 · sophia
 ```
 
-### AI Tinkerers Denver · post-talk note
+### Silicon Flatirons (CU Boulder) · note for the AI working group / mailing list
 ```
-ran a workshop at bsw on agentic workflows for lean founders today ·
-materials are open source · github.com/sudosoph/bsw-growth-agent
+hi · ran a workshop at boulder startup week this week on agentic
+workflows for early-stage founders · materials are open source ·
+github.com/sudosoph/bsw-growth-agent
 
-would love to demo this at the next denver tinkerers meetup if there's
-interest. easy to compress to 20 min for a demo slot · architecture is
-universal even if your use case isn't customer discovery.
+happy to do a shorter version (20-30 min) for a flatirons working
+group session if there's interest, especially anyone working at the
+intersection of agentic systems and policy / governance.
+
+also running 5 free 30-min architecture audits for bsw attendees this
+month if anyone in the cu boulder community wants to talk through a
+specific use case.
 
 · sophia
+sophia@agenticarchitect.ai
+agenticarchitect.ai/blog
 ```
 
-### Rocky Mountain AI Interest Group · email/post
+### Rocky Mountain AI Interest Group (RMAIIG) · email/post
 ```
-hi · for anyone who wasn't at boulder startup week today, i open-sourced
-the customer-discovery agent we built live: github.com/sudosoph/bsw-growth-agent
+hi · for anyone in rmaiig who wasn't at boulder startup week today,
+i open-sourced the customer-discovery agent we built live:
+github.com/sudosoph/bsw-growth-agent
 
 the workshop was for early-stage founders but the patterns generalize ·
 the stack is n8n + claude (or groq for free tier) + gmail · everything
 mit licensed.
 
-happy to give a 20-min version of the talk at a future meetup if useful.
-also running 5 free architecture audits for bsw attendees this month if
-anyone wants 30 minutes 1:1 to talk through their stack.
+happy to give a 20-min version of the talk at a future rmaiig meetup
+if useful. also running 5 free architecture audits for bsw attendees
+this month if anyone wants 30 minutes 1:1 to talk through their stack.
 
 · sophia
 sophia@agenticarchitect.ai
@@ -240,21 +204,90 @@ Don't try to post all of this on Thursday afternoon. Pace it:
 
 | When | What |
 |---|---|
-| Wed 7 PM | Pre-talk teaser tweet |
-| Thu 1 PM (immediately after talk) | Post-talk Twitter announcement · Slack/Discord seeds |
-| Thu 4 PM | LinkedIn long-form post · email to attendees |
+| Wed 7 PM | Pre-talk teaser tweet on X |
+| Thu 1 PM (immediately after talk) | Post-talk X announcement · attendee email |
+| Thu 4 PM | Boulder community Slack/email seeds (AI Builders, Flatirons, RMAIIG) |
 | Thu 8 PM | Hacker News submission (if you want HN traction · best timing is 8-10 PM PT for next morning) |
-| Fri 9 AM | Follow-up Twitter with star count + audit availability |
-| Sat | Recap blog post on agenticarchitect.ai/blog |
-| Sun-Mon | Newsletter goes out summarizing the week |
+| Fri 9 AM | Follow-up X post with star count + audit availability |
+| Sat | Recap post drafted on Substack · scheduled for Sun morning |
+| Sun 9 AM | Newsletter / recap goes out via Substack |
 
 You don't have to do all of these. The minimum-viable post-talk plan is:
 
 1. Email to attendees (Thursday)
-2. Tweet + LinkedIn (Thursday)
-3. Recap blog post (over the weekend)
+2. X announcement (Thursday)
+3. Substack recap (over the weekend)
 
 Skip the rest if you're tired. You just gave a workshop — give yourself the weekend if you need it.
+
+---
+
+## Substack-specific notes
+
+If `agenticarchitect.ai/blog` redirects to a Substack:
+
+- The "attendee email" template above is the right format for a Substack post · paste it as a regular post (not a comment), set the audience to the people who signed up at the workshop, and check "Send as email and post to web."
+- The recap blog draft (in `RECAP-BLOG-DRAFT.md`) is also Substack-ready · drop it into the Substack editor, add 1–2 photos, and schedule for Sunday morning.
+- For ongoing newsletter cadence: weekly is too aggressive when you're starting · pick every-other-Tuesday and stick to it.
+
+---
+
+## X (Twitter) thread option · if you want more reach Thursday
+
+Instead of one big tweet, post the announcement as a 5-tweet thread for better engagement:
+
+```
+1/ just shipped the bsw growth agent live with 200+ founders in
+   the room.
+
+   a customer-discovery agent that runs while you sleep · n8n +
+   claude or groq + gmail · mit licensed.
+
+   github.com/sudosoph/bsw-growth-agent
+```
+
+```
+2/ the demo:
+   · listens to hn / reddit / product hunt for icp signals
+   · drafts personalized outreach in your voice
+   · drops in gmail drafts · NEVER sends without you
+   · 5 drafts a day · ~10 sec to approve each
+   · 50 hours/month back
+
+   that's the 10x output math the workshop description promised.
+```
+
+```
+3/ patterns we covered (memorize these · tools change, patterns don't):
+   · cron + webhook triggers
+   · config-as-files (voice.md, icp.md as drive files · not
+     buried in workflow nodes)
+   · cascade pattern · haiku for routing, sonnet for nuance ·
+     60-70% bill cut
+   · idempotent dedup · re-run safety
+   · hitl via gmail drafts
+```
+
+```
+4/ cost roadmap · same agent, five tiers:
+   tier 0 · FREE · groq + jina + n8n trial · zero install
+   tier 1 · all-cloud SaaS · ~$135/mo
+   tier 3 · lean self-hosted · ~$15/mo
+   tier 4 · max DIY w/ local qwen · ~$8/mo
+
+   most underused 2026 lever: the cascade. cuts bills 60-70%.
+```
+
+```
+5/ if you're an early-stage founder still doing outbound by hand:
+   fork it · github.com/sudosoph/bsw-growth-agent
+
+   if you want to talk through what to automate first ·
+   5 free 30-min audits for bsw attendees:
+   cal.com/sudosoph/architect-audit-bsw
+
+   weekly deep-dives at agenticarchitect.ai/blog
+```
 
 ---
 

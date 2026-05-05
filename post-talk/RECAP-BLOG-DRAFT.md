@@ -235,8 +235,8 @@ What's next:
   · I'm running 5 free 30-min Architecture Audits for BSW attendees
     this month · cal.com/sudosoph/architect-audit-bsw · first-come
   · Weekly deep-dives on agentic architecture at agenticarchitect.ai/blog
-  · I'll be at the next [Boulder AI Builders / Tinkerers Denver / etc.]
-    meetup if you want to talk in person
+  · I'll be at the next Boulder AI Builders Meetup or RMAIIG event
+    if you want to talk in person
 
 If you fork the template and ship something, reply or DM me with a
 link. I'll boost it.

@@ -55,10 +55,9 @@ Free for BSW attendees. Yes, I will write about whatever questions you DM me fro
 
 ## Boulder community — bring an agent next month
 
-- 🏗 **AI Tinkerers Denver** — monthly demos · [aitinkerers.org](https://aitinkerers.org/p/denver)
-- 🏔 **Boulder AI Builders** — alternates Boulder/Denver · 3,000+ members
-- ⛰ **Rocky Mountain AI Interest Group** — 200+ attendee meetups
-- 🎓 **Silicon Flatirons** (CU Boulder) — annual AI conference + research
+- 🏔 **Boulder AI Builders Meetup** — monthly · 3,000+ members in Boulder
+- ⛰ **Rocky Mountain AI Interest Group (RMAIIG)** — 200+ attendee meetups
+- 🎓 **Silicon Flatirons** (CU Boulder) — annual AI conference + research + working groups
 
 ---
 
