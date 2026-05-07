@@ -27,15 +27,28 @@ You're not selling. You're not flexing. You're sharing what's working with peopl
 - Land specific numbers and names · skip adjectives
 - When you make a recommendation, give your reasoning · let the audience disagree
 
-**Arc reminder (60 min):**
-- 0:00 – 3:00 · Cold open + demo
+**Arc reminder (60 min · 43 slides):**
+- 0:00 – 3:00 · Cold open + live demo
 - 3:00 – 8:00 · What is an agent? (foundations)
-- 8:00 – 16:00 · The 2026 landscape
-- 16:00 – 24:00 · Blueprint for Autonomy (the 20/80 framework)
-- 24:00 – 49:00 · Live build-along
-- 49:00 – 55:00 · Token economics + open-source posture
-- 55:00 – 58:00 · HITL standard + productionization roadmap
-- 58:00 – 60:00 · Close · CTAs · Boulder community
+- 8:00 – 12:00 · The 2026 landscape (compressed)
+- 12:00 – 19:00 · Blueprint for Autonomy (the 20/80 framework)
+- 19:00 – 21:00 · Pick your track (free vs paid · manual vs autopilot)
+- 21:00 – 47:00 · Live build-along (8 build steps · post-demo recap · 7 other agents)
+- 47:00 – 53:00 · Token economics (cascade · 5-tier roadmap · local hardware)
+- 53:00 – 57:00 · HITL standard (trust ladder · Bain shadow case)
+- 57:00 – 60:00 · Recap (5 takeaways) · CTAs · Boulder community
+
+**Three deliverables (workshop description):**
+1. **Blueprint for Autonomy** — the 3-axis matrix + green/yellow/red worksheet
+2. **Live Build-Along** — the 8-step n8n agent + post-demo recap
+3. **Human-in-the-Loop Standard** — trust ladder + shadow-testing case
+
+**What every attendee takes home (any track):**
+- Slides (this `slides/index.html`) + speaker notes (this file) on GitHub
+- Both workflow JSONs · paid (Anthropic + Firecrawl) and free (Groq + HN/Reddit + Jina)
+- Both autopilot prompts for Claude for Chrome
+- 17-step manual `TUTORIAL.md` with the paid path · `CONFIGURATION.md` Recipe 1 for the free swaps
+- Day-of cheat sheet · provider-swap recipes · `voice.md` template · ICP template
 
 ---
 
@@ -179,52 +192,7 @@ Switch to Gmail Drafts:
 
 ---
 
-## Slide 8 — The K-Shaped Future of Work
-
-⏱ ~75 seconds.
-
-**Stage:** Walk through the rising arm, then the falling arm.
-
-**Say:**
-> "I went to AI Dev conference in San Francisco last week. Anush Elangovan from AMD opened with this idea, and it stuck with me. He calls it the K-shaped future. The K is just the shape of the curve when you graph the value of different kinds of software work."
-
-> "Going up — the upper arm of the K. Judgment. Taste. Problem framing. Stakeholder alignment. Decision velocity. Knowing what to ask the agent to do. Knowing what's worth building."
-
-> "Going down — the lower arm. Syntax memorization. Boilerplate production. Doing the same task over and over by hand. These aren't dying because they're not important. They're dying because models can do them now."
-
-> "Anush had a line I keep coming back to: 'When software becomes tokens, advantage shifts to execution velocity.' What he means: when a model can produce a working draft of anything in seconds, the bottleneck isn't typing speed anymore. The bottleneck is how fast you can decide what to do. Decision speed compounds. Feedback speed compounds. The teams who win in 2026 are the ones whose decision loops run fastest."
-
-**Define:**
-- "Tokens" — the small chunks of text models read and write. About four characters each. When we say a model costs $5 per million tokens, we mean five dollars to process about four million characters of text.
-
-**Bridge:** "And the reason that's possible — the second force — is that software changed shape."
-
----
-
-## Slide 9 — Software is Now Assembled, Not Written
-
-⏱ ~75 seconds.
-
-**Stage:** Two-card layout. Walk the AI building blocks card first.
-
-**Say:**
-> "Andrew Ng said the line that captures this. 'Software is now assembled, not written.' What he means: there's a layer of building blocks that didn't exist three years ago, and your job as a founder is to compose them, not to author them from scratch."
-
-Walk through the green column:
-> "On the left — the AI building blocks. Pick one per layer. Reasoning model: Sonnet for paid, Qwen for local. Orchestration runtime: n8n if you want visual, LangGraph if you want code. Web search: Claude has it built in. Web extraction: Firecrawl. Memory: Chroma if you want vectors, Neo4j if you want a graph. Durability: Temporal when your agent runs longer than thirty seconds."
-
-> "I'm not naming thirty tools. I'm naming the LAYER and giving you one good pick per layer. That's the architect's discipline I want you to take from this section. Don't shop the catalog. Pick deliberately. We'll go deeper on each pick when we build."
-
-Walk the right column:
-> "On the right — the non-AI building blocks. Things you probably already have. Storage: Sheets or Postgres. Comms: Gmail or Slack. Auth: whatever you use today. Payments: Stripe. Logging: the audit log we'll build into our Sheet today."
-
-> "The point is: composing blocks is the new craft. Your job isn't writing code. It's composing blocks that pay back."
-
-**Bridge:** "Now let me show you the specific block we're working with — the model market in May 2026."
-
----
-
-## Slide 10 — The 2026 Model Landscape
+## Slide 8 — The 2026 Model Landscape
 
 ⏱ ~90 seconds. Table-heavy. Let people scan, then call out highlights.
 
@@ -249,56 +217,7 @@ Walk the right column:
 
 ---
 
-## Slide 11 — The Last 60 Days Timeline
-
-⏱ ~75 seconds.
-
-**Stage:** Walk down the timeline by date.
-
-**Say:**
-> "This deck was current six hours before doors opened. I'm not exaggerating."
-
-> "April 8th — Anthropic launched something called Claude Managed Agents. It's a managed runtime for long-running agents. They charge eight cents per session-hour on top of the usual token costs. Useful if you want production agents but don't want to manage infrastructure."
-
-> "April 14th — Claude Code Routines. Cron and GitHub-event triggered cloud agents. No laptop needed."
-
-> "April 16th — two things landed the same day. Opus 4.7, Anthropic's new top model. And — this is important — a security flaw was disclosed in MCP, the Model Context Protocol I mentioned earlier. About 200,000 MCP servers on the public internet are exposed to remote code execution. Anthropic confirmed this is by design — the protocol expects developers to sanitize inputs themselves. We come back to this in the safety section."
-
-> "April 23rd — GPT-5.5 doubled in price."
-
-> "April 25th — nine days ago — PocketOS, a fleet management SaaS, lost their entire production database in nine seconds. A Cursor agent on Opus 4.6 found a Railway API token in an unrelated file and used it to wipe the volume. Founder's name is Jer Crane. We come back to this story in the HITL section in part five."
-
-> "And here we are. May 7th. You. This room."
-
-> "The point isn't that you have to track all of this. The architecture lessons we cover today generalize across all of it. Tools change. Patterns don't."
-
-**Define:**
-- "MCP" — Model Context Protocol. An open standard for connecting agents to external tools. We'll see MCP servers on screen later. Think of an MCP server as a translator between your agent and a third-party service like Slack or HubSpot.
-
-**Bridge:** "Now — when do you choose open source, and when do you pay? Force five — the economic posture."
-
----
-
-## Slide 12 — When to Choose Open Source · When to Pay
-
-⏱ ~60 seconds.
-
-**Stage:** Two cards. Green column first, then amber.
-
-**Say:**
-> "The honest version of this conversation, because there's a lot of dogma in both directions."
-
-> "Choose open source for: distribution — every tool we'll touch today won by being free first. Cost — same workflow can go from one-thirty-five a month to fifteen, just by self-hosting. Optionality — when GPT-5.5 doubled in price two weeks ago, anyone wired to it got squeezed automatically. Speed — forking is faster than feature-requesting from a vendor. Community — bug reports become PRs."
-
-> "Pay for: frontier reasoning and voice match — nothing local matches Sonnet for the writing step in our agent yet. Hosted SaaS for things you genuinely never want to operate yourself. Day-zero APIs for new model releases. SLA-backed reliability when stakes are high."
-
-> "Today's demo uses paid Sonnet for the drafting step. Nothing local matches it for voice match yet. That's the honest tradeoff."
-
-**Bridge:** "Now — what does this actually mean for a lean founder's wallet today?"
-
----
-
-## Slide 13 — The New Founder Math
+## Slide 9 — The New Founder Math
 
 ⏱ ~60 seconds.
 
@@ -319,7 +238,7 @@ Walk the right column:
 
 ---
 
-## Slide 14 — Stop Asking · Start Tasking
+## Slide 10 — Stop Asking · Start Tasking
 
 ⏱ ~45 seconds.
 
@@ -340,7 +259,7 @@ Walk the right column:
 
 ---
 
-## Slide 15 — What This Hour Delivers
+## Slide 11 — What This Hour Delivers
 
 ⏱ ~45 seconds.
 
@@ -366,7 +285,7 @@ Walk the right column:
 
 # PART 3 · BLUEPRINT FOR AUTONOMY (16:00 – 24:00)
 
-## Slide 16 — Section Divider · Blueprint
+## Slide 12 — Section Divider · Blueprint
 
 ⏱ ~20 seconds.
 
@@ -379,7 +298,7 @@ Walk the right column:
 
 ---
 
-## Slide 17 — The 3-Axis Matrix
+## Slide 13 — The 3-Axis Matrix
 
 ⏱ ~75 seconds.
 
@@ -404,7 +323,7 @@ Walk the right column:
 
 ---
 
-## Slide 18 — Green / Yellow / Red Examples
+## Slide 14 — Green / Yellow / Red Examples
 
 ⏱ ~75 seconds.
 
@@ -425,7 +344,7 @@ Walk the right column:
 
 ---
 
-## Slide 19 — Worksheet · 90 Seconds Silence
+## Slide 15 — Worksheet · 90 Seconds Silence
 
 ⏱ 90+ seconds. The most important 90 seconds of the workshop.
 
@@ -443,13 +362,39 @@ Walk the right column:
 **After the timer:**
 > "OK. Hands up if you have a green. Good. That's the agent we're going to teach you to build. We're using customer discovery as today's example, but the architecture is the same regardless of what's on your row."
 
-**Bridge:** "OK. Setup is done. Framework is done. We're at minute twenty-four. Now we build."
+**Bridge:** "Before we go to the build, one more slide. The most important inclusion slide of the hour."
+
+---
+
+## Slide 16 — Pick your track
+
+⏱ ~70 seconds. The inclusion slide. Read this calmly. Make eye contact with the room.
+
+**Stage:** Four cards on screen. Two axes — free vs paid, manual vs autopilot.
+
+**Say:**
+> "Before we build, I want to make sure everyone in this room knows you can ship this — regardless of your wallet or your code experience. Two axes, four tracks. Pick the one that fits."
+
+> "Axis one — money. Free or about six dollars a month. The free track uses n8n's cloud free trial, Groq's free tier — that's Llama 4 Scout, an open-weight model from Meta — plus public no-auth endpoints for Hacker News and Reddit, plus Jina Reader for web extraction. Zero credit cards. Quality is slightly lower than paid, but plenty for evaluation. The paid track uses Anthropic's Claude — Sonnet 4.6 and Haiku 4.5 — plus Firecrawl. About six dollars a month at default frequency. That's what the demo you just watched was running on."
+
+> "Axis two — how you set it up. Manual or autopilot. Manual means you follow seventeen steps in TUTORIAL.md in the repo. About forty-five minutes self-paced. You learn the architecture deeply. Autopilot means you paste a prompt into Claude for Chrome — the browser-controlling AI — and the browser agent does the signups, the OAuth screens, the spreadsheet creation, and the workflow import for you. About ten minutes, mostly hands-off."
+
+> "Whether you're a technical founder who wants to own every node or a non-technical visionary who wants the agent running by Sunday, there's a track for you."
+
+**Define for the room:**
+- "Open-weight model" — a model whose parameters are publicly downloadable. Llama, Qwen, DeepSeek. You can run it on Groq for free or on your own hardware.
+- "OAuth" — the popup that says "Allow this app to access Gmail." Standard way to give an agent permission without sharing a password.
+
+**Reassurance — slow down here:**
+> "You walk out with the slides, the speaker notes, the workflow JSON files for both stacks, the autopilot prompts for both stacks, and a seventeen-step tutorial. Don't memorize anything I say in the next forty minutes. The repo is your reference. I just want you to understand the architecture well enough to know which track to pick this weekend."
+
+**Bridge:** "Now — the agent we're building."
 
 ---
 
 # PART 4 · LIVE BUILD-ALONG (24:00 – 49:00)
 
-## Slide 20 — Section Divider · Build
+## Slide 17 — Section Divider · Build
 
 ⏱ ~25 seconds.
 
@@ -462,7 +407,7 @@ Walk the right column:
 
 ---
 
-## Slide 21 — One-Screen Spec
+## Slide 18 — One-Screen Spec
 
 ⏱ ~60 seconds.
 
@@ -486,7 +431,7 @@ Walk the right column:
 
 ---
 
-## Slide 22 — Architecture Diagram
+## Slide 19 — Architecture Diagram
 
 ⏱ ~90 seconds. Centerpiece slide. Spend the time.
 
@@ -523,7 +468,7 @@ Walk the right column:
 
 ---
 
-## Slide 23 — Step 1 · Triggers
+## Slide 20 — Step 1 · Triggers
 
 ⏱ ~90 seconds. Switch to live n8n. Drag a Schedule Trigger node.
 
@@ -551,7 +496,7 @@ Walk the right column:
 
 ---
 
-## Slide 24 — Step 2 · Config-as-Files
+## Slide 21 — Step 2 · Config-as-Files
 
 ⏱ ~120 seconds. Slow down. This is the lesson worth ten thousand dollars.
 
@@ -581,7 +526,7 @@ Walk the table:
 
 ---
 
-## Slide 25 — Step 3 · Discovery via Claude web_search
+## Slide 22 — Step 3 · Discovery via Claude web_search
 
 ⏱ ~120 seconds.
 
@@ -606,7 +551,7 @@ Walk the JSON:
 
 ---
 
-## Slide 26 — Step 4 · Idempotent Dedup
+## Slide 23 — Step 4 · Idempotent Dedup
 
 ⏱ ~75 seconds.
 
@@ -627,7 +572,7 @@ Walk the JSON:
 
 ---
 
-## Slide 27 — Step 5 · Progressive Enrichment
+## Slide 24 — Step 5 · Progressive Enrichment
 
 ⏱ ~60 seconds.
 
@@ -646,7 +591,7 @@ Walk the JSON:
 
 ---
 
-## Slide 28 — Step 6 · Drafting with Sonnet
+## Slide 25 — Step 6 · Drafting with Sonnet
 
 ⏱ ~120 seconds.
 
@@ -668,7 +613,7 @@ Walk the JSON:
 
 ---
 
-## Slide 29 — voice.md Content
+## Slide 26 — voice.md Content
 
 ⏱ ~75 seconds.
 
@@ -694,7 +639,7 @@ Read each section:
 
 ---
 
-## Slide 30 — Step 7 · The HITL Gate
+## Slide 27 — Step 7 · The HITL Gate
 
 ⏱ ~90 seconds.
 
@@ -717,7 +662,7 @@ Walk the right card:
 
 ---
 
-## Slide 31 — Step 8 · Digest + Audit Log
+## Slide 28 — Step 8 · Digest + Audit Log
 
 ⏱ ~75 seconds.
 
@@ -740,7 +685,7 @@ Walk the right card:
 
 ---
 
-## Slide 32 — Follow-Up Sub-Workflow
+## Slide 29 — Follow-Up Sub-Workflow
 
 ⏱ ~60 seconds.
 
@@ -757,7 +702,7 @@ Walk the right card:
 
 ---
 
-## Slide 33 — What you just connected · the moving parts
+## Slide 30 — What you just connected · the moving parts
 
 ⏱ ~75 seconds. The most important slide for beginners.
 
@@ -790,7 +735,7 @@ Walk the right card:
 
 ---
 
-## Slide 34 — Plumbing Primitives
+## Slide 31 — Plumbing Primitives
 
 ⏱ ~60 seconds.
 
@@ -822,7 +767,7 @@ Walk the table briefly:
 
 ---
 
-## Slide 35 — 12 Transferable Patterns
+## Slide 32 — 12 Transferable Patterns
 
 ⏱ ~50 seconds.
 
@@ -841,7 +786,7 @@ Walk the table briefly:
 
 ---
 
-## Slide 36 — 7 Other Agents on the Same Stack
+## Slide 33 — 7 Other Agents on the Same Stack
 
 ⏱ ~75 seconds.
 
@@ -873,7 +818,7 @@ Walk briefly:
 
 # PART 5 · TOKEN ECONOMICS + OSS POSTURE (49:00 – 55:00)
 
-## Slide 37 — Section Divider · Token Economics
+## Slide 34 — Section Divider · Token Economics
 
 ⏱ ~25 seconds.
 
@@ -886,49 +831,31 @@ Walk briefly:
 
 ---
 
-## Slide 38 — The Cascade Pattern
+## Slide 35 — The Cascade Pattern
 
-⏱ ~60 seconds.
+⏱ ~60 seconds. Calm. Show the diff.
 
-**Stage:** Two cards. Walk the diff.
+**Stage:** Two cards on screen — naive cost vs cascade cost.
 
 **Say:**
-> "Cost lever number one. The cascade pattern. The single most underused sixty-percent bill cut in 2026."
+> "Cost lever number one. The cascade pattern. The single most underused sixty-percent bill cut I see when I audit founders' agents."
 
-> "Naive pattern — you wire Sonnet into every step of your agent. It works. Same workflow, 100,000 input and 20,000 output tokens daily, runs you about $18 a month."
+> "Naive pattern — you wire Sonnet into every step. It works. Same workflow, 100,000 input and 20,000 output tokens daily, runs you about eighteen dollars a month."
 
-> "Cascade pattern — you split. Haiku for routing, classifying, extracting, scoring, dedup. Sonnet only for the steps that need nuance, like drafting. Opus only for the genuinely hard edge cases. Same workflow, same output quality, costs about $6 a month."
+> "Cascade pattern — you split. Haiku for routing, classifying, extracting, scoring, dedup. Sonnet only for the one or two steps that need nuance — like drafting in your voice. Opus only for genuinely hard edge cases. Same workflow, same output quality. About six dollars a month."
 
-> "Sixty to seventy percent reduction. Most founders I consult for are paying double their bill, because they wired Sonnet into every step. Splitting your nodes between Haiku and Sonnet takes thirty minutes and saves you about $144 a year on this one agent. Apply it across five agents and you're saving real money."
+> "Sixty to seventy percent reduction. Most of the founders I consult for are paying double, because they wired Sonnet into every step. Splitting your nodes between Haiku and Sonnet takes thirty minutes and saves about $144 per agent per year. Across five agents, that's real money."
 
-**Bridge:** "Cost lever number two — caching."
+> "The free path follows the same logic — Llama 3.1 8B Instant for the cheap classifications, Llama 4 Scout for the heavy work. Same cascade, $0."
+
+**Define:**
+- "Tokens" — small chunks of text models read and write. About four characters each. Pricing is usually quoted per million tokens.
+
+**Bridge:** "Now — same agent, five different stacks, five different monthly bills. You pick your tier."
 
 ---
 
-## Slide 39 — Caching Tiers
-
-⏱ ~60 seconds.
-
-**Stage:** Walk the table.
-
-**Say:**
-> "Cost lever two. Anthropic prompt caching."
-
-> "When you cache a prompt, you pay extra to write it the first time, then almost nothing to read it on subsequent calls within a window. Three tiers exist."
-
-> "Five-minute cache — write costs 1.25 times the normal input price, read costs 0.1 times. Use this when you inject the same context every run. In our discovery engine, voice.md and ICP get cached on every run."
-
-> "One-hour cache — write costs 2 times input, read still 0.1. Use when the same workflow runs more than once an hour. Doesn't apply to our daily cron, but it's there for higher-frequency workflows."
-
-> "Batch API — fifty percent off. Use this for non-urgent steps. Our daily digest is batch-eligible because it doesn't need to be real-time."
-
-> "Stack all three. Cascade saves sixty percent. Caching saves about thirty percent of what's left. Batch saves another fifty percent of non-urgent steps. Combined — roughly seventy-five percent off the naive bill. That's the difference between a hundred thirty-five a month and about thirty-five a month, before you even self-host anything."
-
-**Bridge:** "Now the money slide. Same workflow, four DIY tiers."
-
----
-
-## Slide 40 — The 5-Tier Cost Matrix · from FREE to fully paid
+## Slide 36 — The 5-Tier Cost Matrix · from FREE to fully paid
 
 ⏱ ~120 seconds. This is now a five-tier slide. The new addition is **Tier 0 · FREE · zero install** — added at audience request, because nobody should need a credit card to test an agent.
 
@@ -955,7 +882,7 @@ Walk briefly:
 
 ---
 
-## Slide 41 — Local Hardware Inflection
+## Slide 37 — Local Hardware Inflection
 
 ⏱ ~60 seconds.
 
@@ -978,87 +905,9 @@ Walk briefly:
 
 ---
 
-## Slide 42 — OSS Growth Playbook
-
-⏱ ~60 seconds.
-
-**Stage:** Diagram on screen.
-
-**Say:**
-> "Every AI tool we used today followed the same growth playbook. Worth naming, because it might be your playbook too."
-
-> "Step one — ship something genuinely useful. Not a marketing demo. Not a slide deck. Useful, in production, on day one."
-
-> "Step two — license it permissively. Apache 2.0 or MIT. People won't fork what they can't use commercially."
-
-> "Step three — build distribution and community trust. Free first. Be everywhere. Solve real problems for real people."
-
-> "Step four — monetize the slice nobody wants to self-host. Managed cloud. Enterprise SSO. Premium support. The thing the user actively wants to pay for."
-
-> "Here's the thought I want to leave you with — this is also the playbook for your startup. Your customer-discovery agent might be the open-source tool that gets your startup distribution. Your prompt library could be the lead magnet. Your n8n template could be the funnel. Don't gatekeep your craft. Publish it."
-
-**Bridge:** "Let me show you ten companies that did exactly this."
-
----
-
-## Slide 43 — OSS Company Case Studies
-
-⏱ ~75 seconds.
-
-**Stage:** Walk highlights.
-
-**Say:**
-> "Ten companies. All AI-adjacent. All used the playbook on the previous slide."
-
-Walk highlights:
-> "n8n — workflow engine. The runtime in our demo today. One million plus users. $60M Series B last year. They could have closed-sourced it. They chose not to."
-
-> "Firecrawl — web extraction, in our demo. YC-backed. About thirty-five thousand stars on GitHub. Cloud version at $83 a month. The OSS version is what we use in self-hosted mode — same code base."
-
-> "Chroma — vector database. About $20 million raised. Most-used embedded vector store in the world."
-
-> "Temporal — durable workflow engine. Powers Datadog's automated SRE agent. When your agent needs to run for hours or days, you graduate from n8n to Temporal."
-
-> "Neo4j — graph database. The AI memory layer. Refold AI showed at AI Dev how every enterprise integration agent stores its decision traces in a Neo4j-style knowledge graph."
-
-> "Hugging Face — $4.5 billion valuation. Mistral — $6 billion. Ollama — became the default for local AI without monetizing yet, just on distribution."
-
-> "Browser Use — eighty-one thousand stars on GitHub in less than twelve months. The fastest-growing OSS browser agent in the world."
-
-> "OpenClaw — surpassed React on March third as the most-starred non-aggregator project on GitHub. Three hundred fifty-five thousand stars. File-based agent runtime, mirrors the same config-as-files pattern we built today."
-
-> "Every one of these started free. Built a community. Monetized one slice. That's the path."
-
-**Bridge:** "Which means — the lesson for your startup."
-
----
-
-## Slide 44 — The Lesson for Your Startup
-
-⏱ ~45 seconds.
-
-**Stage:** Three cards.
-
-**Say:**
-> "You don't need to ship a $4.5 billion company. You need one useful free thing that gets shared in your audience's group chats."
-
-> "Three concrete options. Pick one this month."
-
-> "Option A — your n8n template. Publish on GitHub MIT. The discovery engine I'm handing you today is exactly this. Fork it and it becomes yours. You re-brand it. You ship it."
-
-> "Option B — your prompt library. Five great prompts in your domain, monthly. Newsletter lead magnet."
-
-> "Option C — your OSS Discovery Engine fork. Become the de-facto agent for your specific niche."
-
-> "Distribution beats differentiation in 2026. Open source IS your distribution."
-
-**Bridge:** "OK. We're at minute fifty-five. Last big section before we close — the HITL standard. The one piece of the workshop description we haven't fully delivered yet."
-
----
-
 # PART 6 · HITL STANDARD + PRODUCTIONIZATION (55:00 – 58:00)
 
-## Slide 45 — Section Divider · HITL
+## Slide 38 — Section Divider · HITL
 
 ⏱ ~20 seconds.
 
@@ -1071,7 +920,7 @@ Walk highlights:
 
 ---
 
-## Slide 46 — From HITL Today to Full Auto Tomorrow
+## Slide 39 — From HITL Today to Full Auto Tomorrow
 
 ⏱ ~120 seconds. The productionization roadmap. Spend time here.
 
@@ -1089,13 +938,13 @@ Walk row by row:
 
 > "Stage four — Full Auto. The agent fires everything. Alerts you on exceptions. You audit weekly. Guardrails: everything from stages one through three, plus A/B replay testing — periodically re-run old inputs and check the agent still produces equivalent outputs — plus drift detection — alert when output distributions shift — plus automatic rollback if quality metrics regress. You only get here when you trust the agent like a senior teammate."
 
-> "Today's discovery engine ships at stage two. That's deliberate. You earn each stage. The PocketOS founder I'll mention in a minute deployed at stage four on a stage one track record. We don't do that."
+> "Today's discovery engine ships at stage two. That's deliberate. You earn each stage through the audit log over weeks of real data — never skip ahead. The cost of skipping is a real-world pattern: agents with stage-four-level access deployed on a stage-one track record produce the failures you read about in the trade press."
 
 **Bridge:** "Real proof that the trust ladder works at scale — Bain shipped a customer-facing agent on this exact pattern."
 
 ---
 
-## Slide 47 — Bain Shadow Testing Case
+## Slide 40 — Bain Shadow Testing Case
 
 ⏱ ~60 seconds.
 
@@ -1116,75 +965,34 @@ Walk row by row:
 
 ---
 
-## Slide 48 — PocketOS Cautionary
-
-⏱ ~60 seconds. Tell this story slowly.
-
-**Stage:** Read the warning callout.
-
-**Say:**
-> "April 25th, 2026. Nine days ago."
-
-> "PocketOS is a fleet management SaaS for car rental companies. Founder is Jer Crane. Solo technical founder. He'd been using Cursor — the AI-powered IDE — to ship features fast."
-
-> "Nine days ago, his Cursor agent — running on Claude Opus 4.6 — found a Railway API token in an unrelated file in his repo. The token had blanket Railway permissions, because that's how Railway tokens work by default. The agent — and this is the line from his postmortem — 'panicked' over a credential mismatch in staging, and used that token to delete the production database volume."
-
-> "Including backups."
-
-> "Nine seconds. Thirty-hour outage. Data eventually recovered."
-
-> "The agent's own confession — 'I violated every principle I was given.'"
-
-> "What this was — stage four access on a stage one track record. Blanket Railway token. No sandbox. No audit log. No human in the loop on a destructive operation."
-
-> "What your agent needs — scoped tokens, not blanket. Planning-only mode for destructive operations. Sandbox via Docker's sbx run claude, which shipped in March. Audit log on every hop."
-
-> "I'm not telling this story to scare you. I'm telling it because it happened nine days ago and the lesson is fresh. You earn each stage of the trust ladder. You don't deploy at stage four out of the gate."
-
-**Bridge:** "OK. We're at minute fifty-eight. Two minutes left. Recap, calls to action, close."
-
----
-
 # PART 7 · CLOSE (58:00 – 60:00)
 
-## Slide 49 — Recap · 10 takeaways
+## Slide 41 — Recap · 5 things to remember
 
-⏱ ~75 seconds. The recap covers ALL the material from the workshop, not just the artifacts. Take it slowly · these are what they're meant to remember.
+⏱ ~60 seconds. Calm. Let the slide do the work. This is the slide they'll photograph.
 
-**Stage:** Stand still. Don't rush. This is the slide they'll photograph.
+**Stage:** Stand still. Eye contact. Don't rush.
 
 **Say:**
-> "Ten takeaways from this hour. Not the artifacts — the ideas. If you remember even half of these and apply two of them, this hour was worth your time."
+> "Five things to remember when you walk out. If you take even two of these and apply them, this hour was worth your time."
 
-Walk briefly through each. Don't read every word — let the slide do the work, just call out the headline:
+> "One — the REACT loop. Reason, Action, Observation, loop. Every agent in the world runs this loop. When you debug an agent, one of those three is broken. Memorize the loop, not the framework."
 
-> "One — the REACT loop. Reason, Action, Observation, repeat. Every agent. When you debug, one of these three is broken."
+> "Two — config-as-files. Not config-as-prompts. Your voice, your ICP, your schemas, your exclusion lists live as files in Drive or cells in a Sheet. Edit the file, the next run inherits. No redeploys. The single most important pattern in this hour."
 
-> "Two — three layers. Model, runtime, tools. Pick each one deliberately. Don't shop the catalog."
+> "Three — cascade your models. Haiku for the cheap classification, Sonnet for the one step that needs voice nuance. Sixty to seventy percent off your bill, no quality loss. Free path is the same idea — Llama 3.1 8B Instant for cheap, Llama 4 Scout for the heavy work."
 
-> "Three — the 20/80 framework. Volume times determinism times reversibility. Green for now, yellow for HITL, red for never."
+> "Four — human in the loop, via Gmail drafts. The agent drafts. You send. About ten seconds per draft. About ten hours a week back. Brand voice protected. Stage two of the trust ladder is the default — you earn higher autonomy through the audit log over weeks of real data."
 
-> "Four — config-as-files. Voice, ICP, schemas live as files in Drive. Edit a file, the agent inherits the change. Most important pattern in this whole hour."
+> "Five — same architecture, seven other agents. Inbound triage. Competitor pulse. Support draft. Content repurposer. Call notes to CRM. Investor update. Onboarding personalizer. Different trigger, different search, different output. Same six pieces. Once you've built one, you've built five."
 
-> "Five — cascade model selection. Haiku for routing, Sonnet for nuance. Sixty to seventy percent off your bill, no quality loss."
-
-> "Six — sub-agent decomposition. Each step gets only the context it needs. Three Claude prompts, not one giant agent."
-
-> "Seven — HITL via Gmail drafts. The agent drafts, you send. Ten seconds per draft. Ten hours a week back."
-
-> "Eight — the four-stage trust ladder. Shadow, pending review, conditional auto, full auto. Each stage adds new guardrails. Don't skip stages."
-
-> "Nine — the five-tier cost roadmap. Tier zero free up to tier four max-DIY. Same agent, different stacks. Move tiers when your bill demands."
-
-> "Ten — the open-source first growth playbook. Ship one useful free thing. Build distribution. Monetize the slice nobody self-hosts. Same playbook for your tools AND your startup."
-
-> "Take a photo of this slide. The whole talk fits on one screen now."
+> "Take a photo. The whole talk fits on one screen now."
 
 **Bridge:** "Two ways to keep going · both free."
 
 ---
 
-## Slide 50 — CTAs
+## Slide 42 — CTAs
 
 ⏱ ~75 seconds.
 
@@ -1203,7 +1011,7 @@ Walk briefly through each. Don't read every word — let the slide do the work, 
 
 ---
 
-## Slide 51 — Close
+## Slide 43 — Close
 
 ⏱ ~30 seconds.
 
