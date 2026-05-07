@@ -25,6 +25,15 @@ When you paste the prompt below, the prompt itself starts with these guardrails.
 - ❌ **Do NOT improvise alternative tools** ("I'll use Make.com instead", "I'll write a Python script"). The plan is fixed.
 - ❌ **Do NOT skip OAuth consent screens.** Pause and let the human click Allow.
 - ❌ **Do NOT proceed if a step fails.** Stop, report the error verbatim, wait for human guidance.
+- ❌ **Do NOT paste code into Code nodes manually.** The JSON file already contains the post-debug code in every node. Importing the JSON is sufficient — no copy-pasting from `n8n/*.js`.
+- ❌ **Do NOT manually re-wire nodes** (Sheets parallel branch, Build Digest Body, etc.). The JSON ships with the corrected topology.
+
+### Known-acceptable diagnostics (don't treat these as failures)
+
+- **Reddit returns 0 results across all 6 fallback hosts** → expected. n8n Cloud IPs are commonly blocked. Diagnostic line: `Reddit 0→0 (none)`. Workflow continues with HN + Lobsters.
+- **Lobsters returns N stories but 0 pass quality filter** → expected for AI/SaaS ICPs. Lobsters surfaces general dev content; rarely intersects ICP-specific keywords.
+- **voice.md "binary/DOCX" warning** in Build Draft Body console → workflow falls back to a built-in voice automatically. Drafts still ship.
+- **`<handle>@verify-on-hn.example` in some sendTo fields** → expected when HN profile has no email. The draft footer includes the profile URL for human verification before sending.
 
 ---
 
@@ -33,6 +42,8 @@ When you paste the prompt below, the prompt itself starts with these guardrails.
 ## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Workflow file: `n8n/bsw-growth-agent-lite.json`. Uses Groq's free **Llama 4 Scout** (discovery + drafting) cascading to **Llama 3.1 8B Instant** (cheap classification) + HN Algolia + Reddit JSON + Jina Reader. Total cost: $0 within free tiers. Quality: noticeably below Sonnet 4.6 voice match — fine for evaluation, not ideal for live customer outreach.
+
+> ⚠️ **Path A status (2026-05-07):** the lite JSON does NOT yet have the demo-day fixes baked in (Reddit cloud-IP fallback, voice.md binary detection, parallel sheet branch, Build Digest Body, Gmail expression mode). For the workshop demo, **use Path B (paid tier)** — its JSON has all fixes. If you want to use Path A anyway, follow the manual steps in `n8n/README.md` after import.
 
 ### Free-path autopilot prompt
 
@@ -84,8 +95,8 @@ TASK 3 · GOOGLE SHEET (config storage)
 4. ICP tab Row 1 headers (cells A1, B1, C1):
      icp_description     signal_keywords     subreddits
 5. ICP tab Row 2 — copy the contents of /home/sophia-stein/bsw/handouts/sheet-tab-icp.csv into A2, B2, C2 (open the file, copy each cell value).
-6. Sent tab Row 1 headers (A1–G1):
-     date  person  signal_type  source_url  score  draft_subject  status
+6. Sent tab Row 1 headers (A1–H1) — **case-sensitive, must match exactly** (n8n's "Append" silently drops mismatched columns):
+     date  person  signal_type  source_url  score  draft_subject  send_to  status
 7. Runs tab Row 1 headers (A1–F1):
      date  leads_found  qualified  drafts  errors  notes
 8. Sent and Runs stay empty under headers — the agent will append rows.
@@ -95,10 +106,13 @@ TASK 3 · GOOGLE SHEET (config storage)
 TASK 4 · GOOGLE DRIVE FOLDER + voice.md
 ═══════════════════════════════════════════════════
 1. Open https://drive.google.com in a new tab.
-2. Create a folder called "agentic-architect" in My Drive root.
-3. Inside it, create a Google Doc named "voice.md".
-4. Copy the entire contents of /home/sophia-stein/bsw/handouts/voice-md-template.md into the Doc.
-5. Right-click voice.md → Share → Get link → copy. Extract the file ID (between /d/ and /view) and add to the credentials tab.
+2. Click the gear icon (top right) → Settings → uncheck "Convert uploads to Google Docs editor format". This is critical — if Drive auto-converts the .md upload to a Google Doc, the workflow gets binary DOCX bytes instead of text. Save.
+3. Create a folder called "agentic-architect" in My Drive root.
+4. Inside the folder, click "+ New" → "File upload" → upload /home/sophia-stein/bsw/handouts/voice-md-template.md as-is. Do NOT create a Google Doc.
+5. After upload, the file should show with a markdown icon, not a blue Doc icon.
+6. Right-click voice.md → Share → Get link → copy. Extract the file ID (between /d/ and /view) and add to the credentials tab.
+
+(Fallback: if Drive's setting can't be changed and the file lands as a Google Doc, the workflow has the Drive node configured with `googleFileConversion → text/plain` — it will export the Doc as plain text on download. So the workflow still works, but verify the voice in your first draft.)
 
 ═══════════════════════════════════════════════════
 TASK 5 · IMPORT n8n WORKFLOW
@@ -121,7 +135,8 @@ TASK 6 · TEST RUN
 ═══════════════════════════════════════════════════
 1. In n8n, click the Manual · Webhook node, then "Test workflow" (or trigger via the webhook URL).
 2. Watch each node turn green. If any turns red, STOP and report the verbatim error.
-3. After the run, verify:
+3. NOTE: Path A's lite JSON does NOT yet have the demo-day fixes (Reddit cloud-IP fallback, voice.md binary detection, parallel sheet branch, Build Digest Body, expression-mode Gmail To). Some failure modes may surface here. Refer the human to /home/sophia-stein/bsw/n8n/README.md for manual fixes — do not attempt those fixes inside this autopilot run.
+4. After the run, verify:
    - Gmail Drafts folder has ~5 new drafts
    - Sheet's Sent tab has ~5 new rows
    - Sheet's Runs tab has 1 new row
@@ -207,22 +222,32 @@ Same as Free Path Task 4. Save the voice.md file ID.
 TASK 6 · IMPORT n8n WORKFLOW
 ═══════════════════════════════════════════════════
 1. n8n.cloud → Workflows → Add → Import from File.
-2. Upload: /home/sophia-stein/bsw/n8n/bsw-growth-agent.json
+2. Upload: /home/sophia-stein/bsw/n8n/bsw-growth-agent.json (this file has all demo-day fixes baked in — DO NOT manually paste any code from the .js files in the n8n/ directory)
 3. Wire credentials:
    - "Anthropic API · x-api-key" → New HTTP Header Auth. Header name: x-api-key. Value: <ANTHROPIC_API_KEY>
    - "Firecrawl API · Authorization Bearer" → New HTTP Header Auth. Header name: Authorization. Value: Bearer <FIRECRAWL_API_KEY>
    - "Google Sheets account" / "Google Drive account" / "Gmail account" → OAuth2, pause for human Allow on each.
-4. Replace placeholder IDs:
-   - REPLACE_WITH_YOUR_SHEET_ID (4 nodes)
-   - REPLACE_WITH_VOICE_MD_FILE_ID (1 node)
-   - REPLACE_WITH_YOUR_EMAIL@example.com (1 node)
+4. Replace placeholder IDs (search the workflow for `REPLACE_`):
+   - REPLACE_WITH_YOUR_SHEET_ID (4 nodes: Read ICP, Read Sent log, Append Sent log, Append Runs audit log)
+   - REPLACE_WITH_VOICE_MD_FILE_ID (1 node: Read voice.md from Drive)
+   - REPLACE_WITH_YOUR_EMAIL@example.com (1 node: Gmail · Send digest to founder)
 
 ═══════════════════════════════════════════════════
 TASK 7 · TEST RUN + HANDOFF
 ═══════════════════════════════════════════════════
-Same verification as Free path: 5 drafts in Gmail, 5 rows in Sent tab, 1 row in Runs tab, 1 digest email.
+1. Click Manual · Webhook → Test workflow.
+2. Watch the execution panel. Each node should turn green in sequence. Total time: 1-2 minutes.
+3. Open Build Discovery Body's output. Console line should look like:
+     Discovery: HN 50→25 | Reddit 0→0 (none) | Lobsters 35→0 | total 25
+   Reddit 0 and Lobsters filtered=0 are NORMAL (cloud IP block, no ICP match). Don't chase them.
+4. Verify:
+   - Gmail Drafts folder has ~5 new drafts (each with a real or placeholder recipient)
+   - Sheet's Sent tab has ~5 new rows including a populated `send_to` column
+   - Sheet's Runs tab has 1 new row with leads_found > 0
+   - The founder received exactly 1 digest email (not 5 — Build Digest Body collapses to one)
+5. If a Code node turns red with "Cannot assign to read only property 'name'": the JSON wasn't fully imported. STOP, report verbatim, ask human.
 
-Report the same handoff summary.
+Report the handoff summary: confirmed drafts (one example subject), elapsed time, any errors.
 
 === AUTOPILOT PROMPT · PAID TIER · END ===
 ```
