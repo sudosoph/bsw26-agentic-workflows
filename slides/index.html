@@ -109,6 +109,7 @@ html, body { background: var(--bg); }
 .reveal .body {
   display: flex;
   flex-direction: column;
+  justify-content: center;     /* vertically center sparse content so slides don't feel half-empty */
   gap: 16px;
   align-self: stretch;
   min-height: 0;
@@ -118,6 +119,7 @@ html, body { background: var(--bg); }
   padding: 28px 32px;
   overflow: hidden;
 }
+.reveal .body.top { justify-content: flex-start; }     /* opt-out for content-heavy slides */
 .reveal .body > .cards-2,
 .reveal .body > .cards-3,
 .reveal .body > .k-grid,
@@ -348,7 +350,7 @@ section.end .signoff strong { color: var(--text); }
 .reveal th {
   background: transparent;
   color: var(--text-3);
-  padding: 12px 18px 14px;
+  padding: 16px 20px 18px;
   text-align: left;
   font-weight: 700;
   font-size: 12px;
@@ -357,12 +359,12 @@ section.end .signoff strong { color: var(--text); }
   border-bottom: 1.5px solid var(--text);
 }
 .reveal td {
-  padding: 12px 18px;
+  padding: 18px 20px;
   border-bottom: 1px solid var(--border-soft);
   color: var(--text-2);
   font-size: 16px;
   vertical-align: middle;
-  line-height: 1.4;
+  line-height: 1.45;
 }
 .reveal td.num   { font-family: 'JetBrains Mono', monospace; color: var(--good); font-weight: 600; }
 .reveal td.muted { color: var(--text-4); }
@@ -1329,7 +1331,46 @@ Your move:   approve before 5pm</code></pre>
   <div class="footer"><span class="tag">leverage</span></div>
 </section>
 
-<!-- 33 — PLUMBING PRIMITIVES -->
+<!-- 33 — POST-DEMO RECAP · WHAT YOU JUST CONNECTED -->
+<section>
+  <div class="eyebrow"><span class="dot"></span>Build · Recap · zoomed-out view of what we just connected</div>
+  <h2>What you just built · in plain terms.</h2>
+  <div class="body">
+    <div class="cards-3" style="gap:16px;">
+      <div class="card">
+        <h3>1 · The brain</h3>
+        <p style="font-size:14px;"><strong>Claude API</strong> — Haiku 4.5 routes &amp; scores · Sonnet 4.6 drafts in your voice. Cascade cuts cost 60–70%. <em style="color:var(--text-3);">Free: Llama 4 Scout on Groq.</em></p>
+      </div>
+      <div class="card">
+        <h3>2 · The eyes</h3>
+        <p style="font-size:14px;"><strong>web_search</strong> + <strong>Firecrawl</strong> — Claude finds prospects, Firecrawl extracts company sites. <em style="color:var(--text-3);">Free: HN Algolia + Reddit JSON + Jina Reader, no auth.</em></p>
+      </div>
+      <div class="card">
+        <h3>3 · The body</h3>
+        <p style="font-size:14px;"><strong>n8n</strong> — open-source orchestrator. Visual nodes wire up the steps. Self-host on a $5 VPS or use n8n.cloud trial.</p>
+      </div>
+      <div class="card">
+        <h3>4 · The memory</h3>
+        <p style="font-size:14px;"><strong>Google Sheets</strong> — three tabs: <code>ICP</code> (your config), <code>Sent</code> (idempotency), <code>Runs</code> (audit log). Edit the sheet, agent inherits.</p>
+      </div>
+      <div class="card">
+        <h3>5 · The voice</h3>
+        <p style="font-size:14px;"><strong>voice.md</strong> in Drive — your writing samples. Cached on every Sonnet call. Edit it; the next run sounds more like you.</p>
+      </div>
+      <div class="card">
+        <h3>6 · The gate</h3>
+        <p style="font-size:14px;"><strong>Gmail Drafts</strong> — the agent NEVER sends. You read each draft, edit, hit send. Stage 2 of the trust ladder.</p>
+      </div>
+    </div>
+    <p class="kicker" style="font-size:14px;">
+      <strong>To run · 4 free accounts:</strong> n8n.cloud · Anthropic ($5 credit) · Firecrawl (500 free) · Google. ·
+      <strong>To customize for your business · 4 things in your Sheet:</strong> <code>voice.md</code> (style) · <code>icp_description</code> (target) · <code>signal_keywords</code> (listen for) · <code>subreddits</code> (where they hang out). No redeploy.
+    </p>
+  </div>
+  <div class="footer"><span class="tag">recap</span></div>
+</section>
+
+<!-- 34 — PLUMBING PRIMITIVES -->
 <section>
   <div class="eyebrow"><span class="dot"></span>Build · Summary · what we just used</div>
   <h2>Plumbing primitives <span style="font-size:18px; font-weight:500; color:var(--text-3);">— reusable building blocks every agent needs.</span></h2>
@@ -1352,7 +1393,7 @@ Your move:   approve before 5pm</code></pre>
   <div class="footer"><span class="tag">durability</span></div>
 </section>
 
-<!-- 34 — 12 PATTERNS GRID -->
+<!-- 35 — 12 PATTERNS GRID -->
 <section>
   <div class="eyebrow"><span class="dot"></span>Build · 12 transferable patterns · yours to keep</div>
   <h2>Walked in for one agent. Walking out with 12 Lego pieces.</h2>
@@ -1376,7 +1417,7 @@ Your move:   approve before 5pm</code></pre>
   <div class="footer"><span class="tag">strategy</span></div>
 </section>
 
-<!-- 35 — 7 OTHER AGENTS -->
+<!-- 36 — 7 OTHER AGENTS -->
 <section>
   <div class="eyebrow"><span class="dot"></span>Build · The multiplier · same stack, different agents</div>
   <h2>7 other agents you can build &lt; 30 minutes each.</h2>
@@ -1402,14 +1443,14 @@ Your move:   approve before 5pm</code></pre>
      PART 05 — TOKEN ECONOMICS + OSS
      ===================================================================== -->
 
-<!-- 36 — DIVIDER · COST -->
+<!-- 37 — DIVIDER · COST -->
 <section class="divider">
   <div class="part">PART 05 · 6 MIN · TOKEN ECONOMICS + OSS</div>
   <h2 class="question">Same agent. $135/month or $8/month.<br/>The difference is one weekend.</h2>
   <div class="sub">Three cost levers stacked. Plus the open-source growth playbook your tools used.</div>
 </section>
 
-<!-- 37 — CASCADE PATTERN -->
+<!-- 38 — CASCADE PATTERN -->
 <section>
   <div class="eyebrow"><span class="dot"></span>Cost · Lever 01 · the cascade</div>
   <h2>Sub-agent decomposition for cost.</h2>
@@ -1436,7 +1477,7 @@ Your move:   approve before 5pm</code></pre>
   <div class="footer"><span class="tag">cash</span></div>
 </section>
 
-<!-- 38 — CACHING TIERS -->
+<!-- 39 — CACHING TIERS -->
 <section>
   <div class="eyebrow"><span class="dot"></span>Cost · Lever 02 · stacking discounts</div>
   <h2>Anthropic prompt caching · May 2026.</h2>
@@ -1454,7 +1495,7 @@ Your move:   approve before 5pm</code></pre>
   <div class="footer"><span class="tag">cash</span><span class="cite">platform.claude.com/docs/pricing · May 2026</span></div>
 </section>
 
-<!-- 39 — 5-TIER COST MATRIX -->
+<!-- 40 — 5-TIER COST MATRIX -->
 <section>
   <div class="eyebrow"><span class="dot"></span>Cost · Roadmap · from FREE to fully paid</div>
   <h2>Same workflow · five cost tiers.</h2>
@@ -1491,7 +1532,7 @@ Your move:   approve before 5pm</code></pre>
   <div class="footer"><span class="tag">cash</span></div>
 </section>
 
-<!-- 40 — LOCAL HARDWARE -->
+<!-- 41 — LOCAL HARDWARE -->
 <section>
   <div class="eyebrow"><span class="dot"></span>Cost · Lever 03 · the local inflection</div>
   <h2>2026 changed the local hardware math.</h2>
@@ -1510,7 +1551,7 @@ Your move:   approve before 5pm</code></pre>
   <div class="footer"><span class="tag">cash</span><span class="tag">safety</span><span class="cite">AMD developer blog · vendor pricing · May 2026</span></div>
 </section>
 
-<!-- 41 — OSS PLAYBOOK -->
+<!-- 42 — OSS PLAYBOOK -->
 <section>
   <div class="eyebrow"><span class="dot"></span>OSS · The growth playbook</div>
   <h2>The pattern every AI tool we used followed.</h2>
@@ -1527,7 +1568,7 @@ Your move:   approve before 5pm</code></pre>
   <div class="footer"><span class="tag">strategy</span></div>
 </section>
 
-<!-- 42 — OSS COMPANY CASE STUDIES -->
+<!-- 43 — OSS COMPANY CASE STUDIES -->
 <section>
   <div class="eyebrow"><span class="dot"></span>OSS · 10 founders who used this exact playbook</div>
   <h2>OSS companies that grew this way.</h2>
@@ -1551,7 +1592,7 @@ Your move:   approve before 5pm</code></pre>
   <div class="footer"><span class="tag">strategy</span><span class="cite">Vendor blogs · GitHub stars · public funding · May 2026</span></div>
 </section>
 
-<!-- 43 — LESSON FOR YOUR STARTUP -->
+<!-- 44 — LESSON FOR YOUR STARTUP -->
 <section>
   <div class="eyebrow"><span class="dot"></span>OSS · The lesson for your startup</div>
   <h2>You don't need to ship a $4.5B company.</h2>
@@ -1571,14 +1612,14 @@ Your move:   approve before 5pm</code></pre>
      PART 06 — HITL + PRODUCTIONIZATION
      ===================================================================== -->
 
-<!-- 44 — DIVIDER · HITL -->
+<!-- 45 — DIVIDER · HITL -->
 <section class="divider">
   <div class="part">PART 06 · 3 MIN · HITL + PRODUCTIONIZATION</div>
   <h2 class="question">Maintain brand voice and ethical oversight<br/>while scaling output 10×.</h2>
   <div class="sub">Direct from the workshop description. We covered HITL in the build · now what comes after, and how to graduate.</div>
 </section>
 
-<!-- 45 — TRUST LADDER + GUARDRAILS -->
+<!-- 46 — TRUST LADDER + GUARDRAILS -->
 <section>
   <div class="eyebrow"><span class="dot"></span>HITL · From human-in-the-loop today to full auto tomorrow</div>
   <h2>The 4-stage trust ladder.</h2>
@@ -1599,7 +1640,7 @@ Your move:   approve before 5pm</code></pre>
   <div class="footer"><span class="tag">safety</span><span class="tag">durability</span></div>
 </section>
 
-<!-- 46 — BAIN SHADOW CASE -->
+<!-- 47 — BAIN SHADOW CASE -->
 <section>
   <div class="eyebrow"><span class="dot"></span>HITL · Real proof · Bain HR Services payroll agent · April 2026</div>
   <h2>From 70% to 98% accuracy through shadow testing.</h2>
@@ -1630,7 +1671,7 @@ Your move:   approve before 5pm</code></pre>
   <div class="footer"><span class="tag">safety</span><span class="cite">AI Dev 26 SF · Autonomous AI Agent in the Wild</span></div>
 </section>
 
-<!-- 47 — POCKETOS -->
+<!-- 48 — POCKETOS -->
 <section>
   <div class="eyebrow"><span class="dot"></span>HITL · Cautionary tale · 9 days before this workshop</div>
   <h2>What skipping stages costs.</h2>
@@ -1659,7 +1700,7 @@ Your move:   approve before 5pm</code></pre>
      CLOSE
      ===================================================================== -->
 
-<!-- 48 — RECAP · 10 CONCRETE TAKEAWAYS -->
+<!-- 49 — RECAP · 10 CONCRETE TAKEAWAYS -->
 <section>
   <div class="eyebrow"><span class="dot"></span>Close · 10 takeaways from one hour</div>
   <h2>What to remember when you walk out.</h2>
@@ -1680,7 +1721,7 @@ Your move:   approve before 5pm</code></pre>
   <div class="footer"><span class="tag">takeaways</span></div>
 </section>
 
-<!-- 49 — CTAs -->
+<!-- 50 — CTAs -->
 <section>
   <div class="eyebrow"><span class="dot"></span>Close · two ways to keep going · both free</div>
   <h2>Take this further.</h2>
@@ -1706,7 +1747,7 @@ Your move:   approve before 5pm</code></pre>
   <div class="footer"><span class="tag">pipeline</span></div>
 </section>
 
-<!-- 50 — CLOSE -->
+<!-- 51 — CLOSE -->
 <section class="end">
   <h1>Bring an <em>agent</em> next month.</h1>
   <p style="font-size:18px; color:var(--text-3); max-width:64%;">Boulder is the lean-founder agentic capital, and you're already here.</p>

@@ -5,6 +5,80 @@
 
 ---
 
+## ⚡ Day-of cheat sheet · the only checklist you need at 10:50am
+
+> Single page. Read top to bottom. Demo-ready in 5 min if you did pre-talk setup.
+
+### 1. Pick your workflow file
+
+| Path | File | When to use |
+|---|---|---|
+| **Demo (recommended)** | `n8n/bsw-growth-agent.json` | Anthropic + Firecrawl · best voice match · ~$0.21/run |
+| **Free backup** | `n8n/bsw-growth-agent-lite.json` | Groq + HN/Reddit + Jina · zero billing risk if Anthropic billing trips up |
+
+### 2. Confirm credentials are wired in n8n (already done from pre-talk setup)
+
+**Paid path:** `Anthropic API · x-api-key` · `Firecrawl API · Authorization Bearer` · `Google Sheets account` · `Google Drive account` · `Gmail account`
+
+**Free path:** `Groq API · Authorization Bearer` · `Google Sheets account` · `Google Drive account` · `Gmail account` (no Firecrawl/Jina credentials — Jina is no-auth)
+
+### 3. Confirm placeholder IDs are replaced
+
+In the imported workflow, **search for `REPLACE_`** — there should be zero hits. The replacements are:
+- `REPLACE_WITH_YOUR_SHEET_ID` → your Sheet ID (4 nodes use it)
+- `REPLACE_WITH_VOICE_MD_FILE_ID` → voice.md file ID (1 node)
+- `REPLACE_WITH_YOUR_EMAIL@example.com` → your email for the digest (1 node)
+
+### 4. Smoke test (terminal)
+
+```bash
+cd /home/sophia-stein/bsw
+
+# Paid:
+ANTHROPIC_API_KEY=sk-ant-... FIRECRAWL_API_KEY=fc-... ./scripts/test-credentials.sh
+
+# Free:
+GROQ_API_KEY=gsk_... ./scripts/test-credentials.sh
+```
+
+Want green checkmarks on every line that has a key set.
+
+### 5. Trigger the demo run
+
+In n8n, click `Manual · Webhook` → **Test workflow**. Watch nodes turn green.
+
+After ~30–60 seconds you should have:
+- ✅ 5 fresh drafts in **Gmail Drafts**
+- ✅ 5 new rows in the **Sent** sheet tab
+- ✅ 1 new row in the **Runs** sheet tab
+- ✅ 1 digest email in your inbox
+
+If anything is red, the most common culprit is a missed `REPLACE_` token. Search the workflow JSON, fix, re-fire.
+
+### 6. Where to find manual demo steps (if you want to walk through live)
+
+| Goal | File |
+|---|---|
+| Build the **paid** workflow node-by-node from scratch (17 steps) | [`TUTORIAL.md`](../TUTORIAL.md) |
+| Build the **free** version manually | [`TUTORIAL.md`](../TUTORIAL.md) + apply the swaps in [`CONFIGURATION.md`](../CONFIGURATION.md) Recipe 1 (Groq + HN/Reddit + Jina) |
+| Have **Claude for Chrome** do the setup for you | [`AUTOPILOT.md`](../AUTOPILOT.md) |
+| **Customize for your own business** (after the demo) | [`README.md`](../README.md) → "Configure your agent" section |
+
+### 7. One-pager: what to customize for *your* business
+
+After the demo, attendees who fork the repo need to change exactly 4 things — all in the Google Sheet, no n8n editing required:
+
+1. **`voice.md`** in Drive — replace with their writing samples (5+ example emails minimum)
+2. **`icp_description`** in Sheet → ICP tab → A2 — describe their ideal customer in plain English
+3. **`signal_keywords`** in Sheet → ICP tab → B2 — comma-separated phrases their customers use when they have the pain
+4. **`subreddits`** in Sheet → ICP tab → C2 — comma-separated subreddit names where their customers hang out
+
+Plus 1 thing in n8n itself: the digest recipient email (1 node, `Gmail · Send digest to founder`).
+
+The cron schedule (default 7am MDT = `0 13 * * *` UTC) and the dedup/score thresholds are also customizable but rarely need changing.
+
+---
+
 ## What's in this repo
 
 ```

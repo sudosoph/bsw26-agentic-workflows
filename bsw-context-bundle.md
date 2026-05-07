@@ -1,14 +1,13 @@
 # BSW Workshop · Complete Context Bundle
 
-> Single-file context dump for any AI assistant working on agenticarchitect.ai content.
 > Last bundled: 2026-05-06
 > Source repo: github.com/sudosoph/bsw26-agentic-workflows
+
 ---
 
 
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ## FILE: GUIDE-CONTEXT.md
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # Guide Context · for the agenticarchitect.ai site assistant
 
@@ -270,9 +269,8 @@ If a reader asks something out of scope (e.g., a different framework, a differen
 *Maintained by Sophia Stein · sophia@agenticarchitect.ai*
 
 
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ## FILE: README.md
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # BSW Growth Agent
 ### A customer-discovery agent that runs while you sleep
@@ -297,6 +295,19 @@ Every morning at 7 AM, this agent:
 6. **Sends you** a daily digest at 7:30 AM with what's queued for review
 
 **Cost per run:** ~$0.21 · **Monthly:** ~$6 paid stack · ~$8 max-DIY · **Build time:** 25 minutes.
+
+---
+
+## 🗺 Pick your path · where to start
+
+| I want to... | Go to |
+|---|---|
+| **See what each piece does in plain language** (no code yet) | "Configure your agent" section below |
+| **Build it manually, node-by-node** (45 min, learn the architecture) | [`TUTORIAL.md`](./TUTORIAL.md) — 17-step build with the paid stack. Apply [`CONFIGURATION.md`](./CONFIGURATION.md) Recipe 1 swaps to do the free version. |
+| **Have an AI agent do the setup for me** (~10 min hands-off) | [`AUTOPILOT.md`](./AUTOPILOT.md) — two prompts (free or paid) to paste into Claude for Chrome |
+| **Just import the workflow JSON and wire credentials** | n8n → Workflows → Add → Import: pick `n8n/bsw-growth-agent.json` (paid) or `n8n/bsw-growth-agent-lite.json` (free) |
+| **Run the demo at the workshop** (presenter day-of runbook) | [`setup/README.md`](./setup/README.md) — has the day-of cheat sheet at the top |
+| **Customize for my own business** (after the demo works) | "Configure your agent" section below — edit 4 cells in your Sheet + 1 file in Drive |
 
 ---
 
@@ -537,9 +548,8 @@ You can fork, modify, sell, or rebrand this freely. **The only ask:** if you shi
 *Built live at Boulder Startup Week 2026 · May 7 · RegenHub*
 
 
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ## FILE: TUTORIAL.md
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # Build the Founder's Discovery Engine
 ## A Code-Along Tutorial
@@ -1121,9 +1131,8 @@ Fork the repo, change the trigger, change `icp.md` and `voice.md`, ship. **Same 
 *Tutorial v1.0 · MIT licensed · fork freely · ship yours · — Sophia Stein, AI Architect*
 
 
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ## FILE: CONFIGURATION.md
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # Configuration · how to swap providers
 
@@ -1388,9 +1397,8 @@ Only the *vendor* of each step changes. **Patterns don't change. Tools do.**
 *Questions? sophia@agenticarchitect.ai · agenticarchitect.ai/blog*
 
 
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ## FILE: AUTOPILOT.md
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # Claude for Chrome · Autopilot Setup
 ## Hands-off setup for the BSW Growth Agent demo
@@ -1659,6 +1667,29 @@ If anything is missing, search the imported workflow for `REPLACE_` — there sh
 
 ---
 
+## Customize for your own business · do this after the agent works once
+
+The autopilot creates a working agent that targets *Sophia's* example ICP. Before you start emailing real prospects, change these 4 things to make the agent useful to **you**. All 4 are edited from a browser — no n8n changes needed.
+
+| # | What to edit | Where | Why |
+|---|---|---|---|
+| 1 | **`voice.md`** | Drive → `agentic-architect/voice.md` | Replace with **5+ of your real outbound emails** + a short tone-notes block. The agent caches this and writes drafts in this voice. The single biggest lever for quality. |
+| 2 | **`icp_description`** | Sheet → `ICP` tab → cell A2 | One sentence describing your ideal customer. Be specific: stage, role, pain, geography. Vague ICPs produce vague leads. |
+| 3 | **`signal_keywords`** | Sheet → `ICP` tab → cell B2 | Comma-separated phrases your prospects say when they have the pain you solve. Examples: "hired SDR", "outbound costs", "Lindy credits". The agent searches for these verbatim. |
+| 4 | **`subreddits`** | Sheet → `ICP` tab → cell C2 | Comma-separated subreddit names (no `r/` prefix) where your customers hang out. Default is generalist SaaS subs — replace with niche ones for better signal. |
+
+**One n8n change** also worth doing once:
+- **Digest recipient** — the `Gmail · Send digest to founder` node has a `sendTo` field. Replace `REPLACE_WITH_YOUR_EMAIL@example.com` with your address. (The autopilot did this for you, but double-check.)
+
+**Optional tweaks** (most people leave these alone):
+- **Cron schedule** — default is `0 13 * * *` (7am MDT). Adjust UTC for your timezone: PT=14, ET=11, UK=06, CET=05. Edit in the `Cron · Daily 7am MDT` node.
+- **Score threshold** — default keeps leads scored ≥ 6. Edit `>= 6` in the `Parse · Extract qualified leads` JS code.
+- **Drafts per run** — default 5. Edit `slice(0, 5)` in the `Dedup · top 5 fresh leads` JS code.
+
+After any change to the Sheet or `voice.md`, the **next run** picks it up. No redeploy needed — that's the config-as-files pattern.
+
+---
+
 ## Activate the cron
 
 Once the manual run works:
@@ -1680,9 +1711,8 @@ Once the manual run works:
 *— Sophia Stein · agenticarchitect.ai/blog · sophia@agenticarchitect.ai*
 
 
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ## FILE: handouts/voice-md-template.md
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # Sophia's voice — for outbound writing
 
@@ -1832,9 +1862,8 @@ The agent learns voice from these. **Five minimum. More is better.** Add new one
 *Voice file by Sophia Stein · sophia@agenticarchitect.ai · agenticarchitect.ai/blog · MIT licensed*
 
 
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ## FILE: handouts/icp-md-template.md
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # ICP — Ideal Customer Profile
 
@@ -1910,9 +1939,8 @@ See `do-not-contact.csv` in the same Drive folder. Updated continuously. Include
 *ICP file by Sophia Stein · agenticarchitect.ai/blog · last updated 2026-05-04*
 
 
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ## FILE: handouts/schemas-md-template.md
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # Agent Schemas — JSON output shapes
 
@@ -2046,9 +2074,8 @@ This is your trust-building primitive. After 14 consecutive runs with high appro
 *Schemas file · part of github.com/sudosoph/bsw26-agentic-workflows · MIT licensed*
 
 
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ## FILE: handouts/20-80-worksheet.md
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # The 20/80 Worksheet
 ## Architecting Agentic Workflows · Boulder Startup Week 2026
@@ -2188,9 +2215,8 @@ ________________________________________________________________
 *Worksheet by Sophia Stein · MIT licensed · feel free to fork & adapt*
 
 
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ## FILE: handouts/oss-growth-playbook.md
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # The OSS Growth Playbook
 ## How AI Tools Grow — and How Your Startup Can Use the Same Playbook
@@ -2296,9 +2322,8 @@ The Discovery Engine you got from this workshop is option C, ready-made. Fork it
 *Take it. Build it. Ship it. — Sophia Stein · agenticarchitect.ai/blog*
 
 
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ## FILE: resources-landing.md
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # Welcome — you were at the BSW workshop.
 

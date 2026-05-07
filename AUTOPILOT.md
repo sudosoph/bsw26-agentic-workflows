@@ -265,6 +265,29 @@ If anything is missing, search the imported workflow for `REPLACE_` — there sh
 
 ---
 
+## Customize for your own business · do this after the agent works once
+
+The autopilot creates a working agent that targets *Sophia's* example ICP. Before you start emailing real prospects, change these 4 things to make the agent useful to **you**. All 4 are edited from a browser — no n8n changes needed.
+
+| # | What to edit | Where | Why |
+|---|---|---|---|
+| 1 | **`voice.md`** | Drive → `agentic-architect/voice.md` | Replace with **5+ of your real outbound emails** + a short tone-notes block. The agent caches this and writes drafts in this voice. The single biggest lever for quality. |
+| 2 | **`icp_description`** | Sheet → `ICP` tab → cell A2 | One sentence describing your ideal customer. Be specific: stage, role, pain, geography. Vague ICPs produce vague leads. |
+| 3 | **`signal_keywords`** | Sheet → `ICP` tab → cell B2 | Comma-separated phrases your prospects say when they have the pain you solve. Examples: "hired SDR", "outbound costs", "Lindy credits". The agent searches for these verbatim. |
+| 4 | **`subreddits`** | Sheet → `ICP` tab → cell C2 | Comma-separated subreddit names (no `r/` prefix) where your customers hang out. Default is generalist SaaS subs — replace with niche ones for better signal. |
+
+**One n8n change** also worth doing once:
+- **Digest recipient** — the `Gmail · Send digest to founder` node has a `sendTo` field. Replace `REPLACE_WITH_YOUR_EMAIL@example.com` with your address. (The autopilot did this for you, but double-check.)
+
+**Optional tweaks** (most people leave these alone):
+- **Cron schedule** — default is `0 13 * * *` (7am MDT). Adjust UTC for your timezone: PT=14, ET=11, UK=06, CET=05. Edit in the `Cron · Daily 7am MDT` node.
+- **Score threshold** — default keeps leads scored ≥ 6. Edit `>= 6` in the `Parse · Extract qualified leads` JS code.
+- **Drafts per run** — default 5. Edit `slice(0, 5)` in the `Dedup · top 5 fresh leads` JS code.
+
+After any change to the Sheet or `voice.md`, the **next run** picks it up. No redeploy needed — that's the config-as-files pattern.
+
+---
+
 ## Activate the cron
 
 Once the manual run works:

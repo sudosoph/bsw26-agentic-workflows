@@ -2,9 +2,10 @@
 # bsw-growth-agent · what NOT to push to GitHub
 # =====================================================================
 
-# ---- Private workshop materials (Sophia's IP, not for public) ----
-script/
+# ---- Private workshop materials (not for public) ----
 docs/superpowers/
+# script/ is intentionally PUBLISHED so attendees can reference the talk script
+# alongside the slides — see script/speaker-notes.md
 
 # ---- Local Claude Code config ----
 .claude/

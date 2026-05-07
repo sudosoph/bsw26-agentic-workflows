@@ -24,6 +24,19 @@ Every morning at 7 AM, this agent:
 
 ---
 
+## 🗺 Pick your path · where to start
+
+| I want to... | Go to |
+|---|---|
+| **See what each piece does in plain language** (no code yet) | "Configure your agent" section below |
+| **Build it manually, node-by-node** (45 min, learn the architecture) | [`TUTORIAL.md`](./TUTORIAL.md) — 17-step build with the paid stack. Apply [`CONFIGURATION.md`](./CONFIGURATION.md) Recipe 1 swaps to do the free version. |
+| **Have an AI agent do the setup for me** (~10 min hands-off) | [`AUTOPILOT.md`](./AUTOPILOT.md) — two prompts (free or paid) to paste into Claude for Chrome |
+| **Just import the workflow JSON and wire credentials** | n8n → Workflows → Add → Import: pick `n8n/bsw-growth-agent.json` (paid) or `n8n/bsw-growth-agent-lite.json` (free) |
+| **Run the demo at the workshop** (presenter day-of runbook) | [`setup/README.md`](./setup/README.md) — has the day-of cheat sheet at the top |
+| **Customize for my own business** (after the demo works) | "Configure your agent" section below — edit 4 cells in your Sheet + 1 file in Drive |
+
+---
+
 ## Quick start
 
 ### 🆓 Free path · zero install · zero credit card · Tier 0
