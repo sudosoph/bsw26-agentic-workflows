@@ -67,16 +67,16 @@ fi
 
 # -------------------- Groq (free tier) --------------------
 echo ""
-echo -e "${CYAN}3 · Groq (free tier · Llama 3.3)${RESET}"
+echo -e "${CYAN}3 · Groq (free tier · Llama 4 Scout)${RESET}"
 if [ -n "${GROQ_API_KEY:-}" ]; then
   resp=$(curl -sS https://api.groq.com/openai/v1/chat/completions \
     -H "Authorization: Bearer $GROQ_API_KEY" \
     -H "Content-Type: application/json" \
-    -d '{"model":"llama-3.3-70b-versatile","max_tokens":20,"messages":[{"role":"user","content":"reply with the word OK"}]}')
+    -d '{"model":"meta-llama/llama-4-scout-17b-16e-instruct","max_tokens":20,"messages":[{"role":"user","content":"reply with the word OK"}]}')
 
   if echo "$resp" | grep -q '"content"'; then
     text=$(echo "$resp" | grep -oP '"content"\s*:\s*"\K[^"]+' | head -1)
-    ok "Groq API key valid · Llama 3.3 responded: \"$text\""
+    ok "Groq API key valid · Llama 4 Scout responded: \"$text\""
   else
     fail "Groq API call failed:"
     echo "    $resp" | head -c 300

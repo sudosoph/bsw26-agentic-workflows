@@ -3,7 +3,6 @@
 > Single-file context dump for any AI assistant working on agenticarchitect.ai content.
 > Last bundled: 2026-05-06
 > Source repo: github.com/sudosoph/bsw26-agentic-workflows
-
 ---
 
 
@@ -2316,7 +2315,7 @@ The Discovery Engine you got from this workshop is option C, ready-made. Fork it
 Everything you need to fork the agent we built live.
 
 - 📦 **Repo (MIT licensed):** [github.com/sudosoph/bsw26-agentic-workflows](https://github.com/sudosoph/bsw26-agentic-workflows)
-- 🔧 **n8n workflow JSON** — `n8n/bsw-growth-agent.json` (importable)
+- 🔧 **n8n workflow JSON** — `n8n/bsw-growth-agent.json` (paid: Anthropic + Firecrawl) or `n8n/bsw-growth-agent-lite.json` (free: Groq + HN/Reddit + Jina)
 - 📋 **Setup README** — 30-min start-to-running guide
 - 📝 **Sample voice.md** — your brand voice file template
 - 🎯 **Sample icp.md** — ICP definition file template
@@ -2405,14 +2404,14 @@ Free for BSW attendees. Yes, I will write about whatever questions you DM me fro
 
 ## The stack we used (and why)
 
-| Layer | Tool | Why |
+| Layer | Paid version | Free alternative |
 |---|---|---|
-| Reasoning | Claude **Sonnet 4.6** + **Haiku 4.5** | Cascade pattern · 60-70% bill cut |
-| Web search | Claude `web_search` tool | One vendor, one key, one node |
-| Orchestration | **n8n** (self-host or cloud) | OSS · visual · MCP-native · code escape hatch |
-| Web extract | **Firecrawl** (self-host or cloud) | OSS Apache 2.0 · best on JS-heavy sites |
-| Storage / queue | **Google Sheets** | Free · universal · founder-editable |
-| HITL gate | **Gmail Drafts** | Free · the agent NEVER sends |
+| Reasoning | Claude **Sonnet 4.6** + **Haiku 4.5** (cascade) | Groq **Llama 4 Scout** + **Llama 3.1 8B Instant** (cascade) |
+| Web search | Claude `web_search` tool (built-in) | HN Algolia + Reddit JSON (no auth, no signup) |
+| Orchestration | **n8n** (self-host or cloud) | (same) |
+| Web extract | **Firecrawl** (Apache 2.0) | **Jina Reader** (no key, free) |
+| Storage / queue | **Google Sheets** | (same) |
+| HITL gate | **Gmail Drafts** — agent NEVER sends | (same) |
 
 **4-tier cost roadmap:** $135 → $95 → $15 → $8 per month for the same workflow.
 

@@ -17,7 +17,8 @@
 ├── script/
 │   └── speaker-notes.md                              ← 10K-word speaker script
 ├── n8n/
-│   └── bsw-growth-agent.json                ← importable workflow
+│   ├── bsw-growth-agent.json                ← paid workflow (Anthropic + Firecrawl)
+│   └── bsw-growth-agent-lite.json           ← free workflow (Groq + HN + Reddit + Jina)
 ├── handouts/
 │   ├── voice-md-template.md                          ← brand voice file
 │   ├── icp-md-template.md                            ← ICP definition
@@ -36,11 +37,18 @@
 
 ### Accounts you need
 
-- [ ] **Anthropic API key** — platform.claude.com → Workbench → Settings → API Keys. Reserve $50 budget.
+**For the PAID demo workflow (`bsw-growth-agent.json`):**
+- [ ] **Anthropic API key** — console.anthropic.com → Settings → API Keys. Reserve $50 budget (workshop demo runs ~$0.21 each).
 - [ ] **Firecrawl trial** — firecrawl.dev → free tier is 500 credits, plenty for the demo
+
+**For the FREE backup workflow (`bsw-growth-agent-lite.json`):**
+- [ ] **Groq API key** — console.groq.com → API Keys. Free tier, no card. Llama 4 Scout + 3.1 8B Instant.
+- [ ] (HN Algolia + Reddit JSON + Jina Reader use public no-auth endpoints — no signup required.)
+
+**Both workflows need:**
 - [ ] **n8n.cloud trial** — n8n.io/cloud (or self-host via `docker run -it --rm -p 5678:5678 n8nio/n8n` on a $5 Hetzner VPS)
 - [ ] **Google Workspace** — your existing personal Gmail
-- [ ] **GitHub repo** — create `sudosoph/bsw26-agentic-workflows` · MIT license · push the n8n JSON + handouts
+- [ ] **GitHub repo** — `sudosoph/bsw26-agentic-workflows` · MIT license
 
 ### Google Drive folder structure
 
@@ -55,9 +63,9 @@ Create a folder called `agentic-architect/` in Drive containing:
 Create one Sheet with three tabs:
 
 **Tab 1 — `ICP`** (read by the agent on every run)
-| icp_description | signal_keywords |
-|---|---|
-| Early-stage SaaS founders, pre-PMF, technical-leaning, complaining about outbound costs | n8n cost, Lindy credits, hired SDR, founder-led sales, Sonnet 4.6 cost |
+| icp_description | signal_keywords | subreddits |
+|---|---|---|
+| Early-stage SaaS founders, pre-PMF, technical-leaning, complaining about outbound costs | n8n cost, Lindy credits, hired SDR, founder-led sales, Sonnet 4.6 cost | SaaS,Entrepreneur,AI_Agents,ChatGPTCoding,LocalLLaMA |
 
 **Tab 2 — `Sent`** (idempotency log — agent appends each draft)
 Headers: `date · person · signal_type · source_url · score · draft_subject · status`
@@ -69,13 +77,13 @@ Headers: `date · leads_found · qualified · drafts · errors · notes`
 
 1. Open n8n
 2. Click `+ Add Workflow` → menu (`...`) → `Import from File...`
-3. Select `/home/sophia-stein/bsw/n8n/bsw-growth-agent.json`
+3. Select the workflow file you're using:
+   - **Paid demo:** `/home/sophia-stein/bsw/n8n/bsw-growth-agent.json`
+   - **Free backup:** `/home/sophia-stein/bsw/n8n/bsw-growth-agent-lite.json`
 4. Wire up credentials:
-   - **Anthropic API · x-api-key** → HTTP Header Auth, name=`x-api-key`, value=your key
-   - **Firecrawl API · Authorization Bearer** → HTTP Header Auth, name=`Authorization`, value=`Bearer fc-yourkey`
-   - **Google Sheets account** → OAuth2 against your Google Workspace
-   - **Google Drive account** → OAuth2 against your Google Workspace
-   - **Gmail account** → OAuth2 against your Google Workspace
+   - **Paid path** — `Anthropic API · x-api-key` (HTTP Header Auth, header `x-api-key`) + `Firecrawl API · Authorization Bearer` (HTTP Header Auth, header `Authorization` = `Bearer fc-yourkey`)
+   - **Free path** — `Groq API · Authorization Bearer` (HTTP Header Auth, header `Authorization` = `Bearer gsk_yourkey`). No Firecrawl credential needed (Jina is no-auth).
+   - **Both paths** — `Google Sheets account`, `Google Drive account`, `Gmail account` (all OAuth2)
 5. Replace placeholders in the workflow:
    - `REPLACE_WITH_YOUR_SHEET_ID` — your Google Sheet ID (from the URL)
    - `REPLACE_WITH_VOICE_MD_FILE_ID` — the voice.md file ID in Drive (right-click → Share → copy link → extract ID)
@@ -98,7 +106,8 @@ Headers: `date · leads_found · qualified · drafts · errors · notes`
 
 ### T-30 minutes (10:30 AM)
 
-- [ ] Run the n8n workflow ONCE manually to verify Anthropic + Firecrawl + Sheets all working
+- [ ] Run the demo workflow ONCE manually to verify all credentials and OAuth scopes
+- [ ] Have the LITE workflow imported in a SECOND n8n workflow as a Wi-Fi/billing fallback
 - [ ] Check Gmail Drafts folder — should see 5 fresh drafts from the test run
 - [ ] Delete those test drafts (they were against test ICP, not real)
 
@@ -205,6 +214,9 @@ Record this Tuesday or Wednesday before the talk:
 |---|---|---|
 | Anthropic 401 | API key not in n8n credential | Re-paste, check for trailing whitespace |
 | Anthropic 400 — "model not found" | Wrong model ID string | Use `claude-sonnet-4-6` and `claude-haiku-4-5` exactly |
+| Groq 401 | Bearer prefix missing | HTTP Header value must be `Bearer gsk_...` not just the key |
+| Groq 400 — "model not found" | Wrong model ID | Use `meta-llama/llama-4-scout-17b-16e-instruct` and `llama-3.1-8b-instant` exactly |
+| Reddit returns 429 | Missing User-Agent header | The lite workflow includes one; if you removed it, add it back |
 | Firecrawl 402 | Out of credits | Top up or swap for self-hosted Firecrawl image |
 | Sheets append fails | OAuth scope missing | Re-auth Sheets credential, ensure write scope |
 | Gmail draft creation fails | OAuth scope missing | Re-auth Gmail with `gmail.compose` scope |
