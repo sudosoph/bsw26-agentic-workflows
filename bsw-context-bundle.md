@@ -6,7 +6,7 @@
 
 
 ## FILE: GUIDE-CONTEXT.md
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # Guide Context · for the agenticarchitect.ai site assistant
 
@@ -269,7 +269,7 @@ If a reader asks something out of scope (e.g., a different framework, a differen
 
 
 ## FILE: README.md
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # BSW Growth Agent
 ### A customer-discovery agent that runs while you sleep
@@ -548,7 +548,7 @@ You can fork, modify, sell, or rebrand this freely. **The only ask:** if you shi
 
 
 ## FILE: TUTORIAL.md
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # Build the Founder's Discovery Engine
 ## A Code-Along Tutorial
@@ -1131,7 +1131,7 @@ Fork the repo, change the trigger, change `icp.md` and `voice.md`, ship. **Same 
 
 
 ## FILE: CONFIGURATION.md
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # Configuration · how to swap providers
 
@@ -1397,7 +1397,7 @@ Only the *vendor* of each step changes. **Patterns don't change. Tools do.**
 
 
 ## FILE: AUTOPILOT.md
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # Claude for Chrome · Autopilot Setup
 ## Hands-off setup for the BSW Growth Agent demo
@@ -1711,7 +1711,7 @@ Once the manual run works:
 
 
 ## FILE: handouts/voice-md-template.md
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # Sophia's voice — for outbound writing
 
@@ -1862,7 +1862,7 @@ The agent learns voice from these. **Five minimum. More is better.** Add new one
 
 
 ## FILE: handouts/icp-md-template.md
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # ICP — Ideal Customer Profile
 
@@ -1939,7 +1939,7 @@ See `do-not-contact.csv` in the same Drive folder. Updated continuously. Include
 
 
 ## FILE: handouts/schemas-md-template.md
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # Agent Schemas — JSON output shapes
 
@@ -2074,7 +2074,7 @@ This is your trust-building primitive. After 14 consecutive runs with high appro
 
 
 ## FILE: handouts/20-80-worksheet.md
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # The 20/80 Worksheet
 ## Architecting Agentic Workflows · Boulder Startup Week 2026
@@ -2215,7 +2215,7 @@ ________________________________________________________________
 
 
 ## FILE: handouts/oss-growth-playbook.md
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # The OSS Growth Playbook
 ## How AI Tools Grow — and How Your Startup Can Use the Same Playbook
@@ -2322,7 +2322,7 @@ The Discovery Engine you got from this workshop is option C, ready-made. Fork it
 
 
 ## FILE: resources-landing.md
-## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # Welcome — you were at the BSW workshop.
 

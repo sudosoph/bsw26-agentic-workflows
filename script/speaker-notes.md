@@ -165,7 +165,7 @@ Switch to Gmail Drafts:
 
 > "Layer two — the runtime. This manages the loop. State. Tool calls. Retries. The audit log. Today we're using n8n. n8n is an open-source workflow tool. Visual interface, you connect nodes with lines. If you outgrow the visual layer, you graduate down to a code-first framework like LangGraph, or to Temporal if you need durable execution — that means workflows that survive across restarts and run for hours or days."
 
-> "Layer three — the tools. The external capabilities the model can invoke. Today we'll use Claude's built-in web_search tool, plus Firecrawl for web scraping, plus the Gmail API, plus the Google Sheets API. As you grow, you'll add more — MCP servers for HubSpot, for Linear, for Stripe. We'll cover what MCP is in a minute."
+> "Layer three — the tools. The external capabilities the model can invoke. Today on the paid path: Claude's built-in `web_search`, Firecrawl for web extraction, plus the Gmail and Google Sheets APIs. On the free path: HN Algolia and Reddit's public JSON for search, Jina Reader for extraction — same shape, no auth. As you grow, you'll add more capabilities through MCP — Model Context Protocol — which is an open standard for plugging tools like HubSpot, Linear, or Stripe into any agent. We won't go deep on MCP today; the repo links to the registry if you want to explore later."
 
 **Define:**
 - "Model" — the AI itself. Claude, GPT, Gemini, Llama. The thing that reasons and writes.
@@ -825,7 +825,7 @@ Walk briefly:
 **Stage:** Stand still.
 
 **Say:**
-> "This part is where lean founders get a real economic lever. Three cost levers, stacked on top of each other. Plus the open-source growth playbook your tools used — the same playbook you can use for your startup."
+> "Six minutes here. The lean-founder economic lever. Same agent — the difference between a one-hundred-thirty-five-dollar bill and an eight-dollar bill is one weekend of work. We'll walk the cascade, the tier roadmap, and where local hardware breaks even."
 
 **Bridge:** "Cost lever number one. The cascade pattern."
 
@@ -901,7 +901,7 @@ Walk briefly:
 
 > "When does local make sense? When your API bill exceeds $200 a month. When you're handling personally identifiable information. When you have a predictable workload that doesn't need elasticity. Most of you don't need local yet. Start with the API. We'll cover this in our follow-up if you book office hours."
 
-**Bridge:** "OK. Economics done. Last topic in this section — the open-source growth playbook, because it's a strategy lesson for your startup, not just a cost story."
+**Bridge:** "OK. Economics done. Last big topic — the standard for keeping this safe and on-voice as you scale."
 
 ---
 
@@ -961,7 +961,7 @@ Walk row by row:
 
 > "Same lesson at startup scale. The agent is twenty percent. Your dedup, HITL gate, voice file, audit log — that's the eighty percent. That's why we spent two-thirds of the build time on plumbing, not prompting."
 
-**Bridge:** "And — the cautionary tale, just to make sure no one in this room ships at stage four next week without the scaffolding."
+**Bridge:** "Two minutes left. Five things to remember when you walk out."
 
 ---
 
